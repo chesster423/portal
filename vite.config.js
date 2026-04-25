@@ -7,7 +7,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 // GitHub Project Pages URL is https://<user>.github.io/<repo>/
 // Change this to match your repository name (or "/" for a user site).
 export default defineConfig({
-  base: "/chesster-personal/",
+  base: "/portal/",
   build: {
     rollupOptions: {
       input: {
