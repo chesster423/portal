@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Dashboard — Chesster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <header class="dash-header">
+      <a class="logo" href="index.html">
+        <span class="logo__mark">◀</span>
+        <span class="logo__text">CHESSTER</span>
+        <span class="logo__tag">DASHBOARD</span>
+      </a>
+    </header>
+
+    <main class="dash-main">
+      <section id="screen-login" class="panel panel--narrow" aria-labelledby="login-title">
+        <h1 id="login-title" class="panel__title">Sign in</h1>
+        <p class="panel__muted">Static login — for personal use only. Not a secure vault.</p>
+        <form id="form-login" class="form">
+          <label class="field">
+            <span class="field__label">Username</span>
+            <input name="username" type="text" autocomplete="username" required />
+          </label>
+          <label class="field">
+            <span class="field__label">Password</span>
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <p id="login-error" class="form-error" role="alert" hidden></p>
+          <button type="submit" class="btn btn--primary">Enter dashboard</button>
+        </form>
+      </section>
+
+      <section id="screen-app" class="panel" hidden aria-label="Review editor">
+        <div class="toolbar">
+          <div class="toolbar__left">
+            <button type="button" class="btn btn--primary" id="btn-new">New review</button>
+            <button type="button" class="btn btn--ghost" id="btn-download">Download reviews.json</button>
+          </div>
+          <div class="toolbar__right">
+            <button type="button" class="btn btn--ghost" id="btn-reset">Load bundled JSON…</button>
+            <button type="button" class="btn btn--ghost" id="btn-logout">Log out</button>
+          </div>
+        </div>
+        <p id="save-hint" class="panel__muted">
+          Edits save in this browser only. Download the file and replace <code>public/reviews.json</code>, then push,
+          to update GitHub Pages for everyone.
+        </p>
+
+        <div class="layout">
+          <div class="layout__list">
+            <h2 class="subhead">Reviews</h2>
+            <ul id="review-list" class="review-list"></ul>
+          </div>
+          <div class="layout__form">
+            <h2 class="subhead" id="form-heading">Edit review</h2>
+            <form id="form-review" class="form">
+              <input type="hidden" name="originalId" id="field-original-id" value="" />
+              <label class="field">
+                <span class="field__label">ID (URL slug)</span>
+                <input name="id" id="field-id" type="text" required pattern="[a-z0-9][a-z0-9-]*" title="Lowercase letters, numbers, hyphens" />
+              </label>
+              <label class="field">
+                <span class="field__label">Title</span>
+                <input name="title" id="field-title" type="text" required />
+              </label>
+              <div class="field-row">
+                <label class="field">
+                  <span class="field__label">Platform</span>
+                  <input name="platform" id="field-platform" type="text" required />
+                </label>
+                <label class="field">
+                  <span class="field__label">Genre</span>
+                  <input name="genre" id="field-genre" type="text" required />
+                </label>
+              </div>
+              <div class="field-row">
+                <label class="field">
+                  <span class="field__label">Score</span>
+                  <input name="score" id="field-score" type="number" step="0.1" min="0" max="10" required />
+                </label>
+                <label class="field">
+                  <span class="field__label">Date</span>
+                  <input name="date" id="field-date" type="date" required />
+                </label>
+              </div>
+              <label class="field">
+                <span class="field__label">Summary</span>
+                <textarea name="summary" id="field-summary" rows="2" required></textarea>
+              </label>
+              <label class="field">
+                <span class="field__label">Full review</span>
+                <textarea name="body" id="field-body" rows="6" required></textarea>
+              </label>
+              <div class="form-actions">
+                <button type="submit" class="btn btn--primary" id="btn-save">Save</button>
+                <button type="button" class="btn btn--danger" id="btn-delete" hidden>Delete</button>
+                <button type="button" class="btn btn--ghost" id="btn-cancel">Clear form</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/dashboard.js"></script>
+  </body>
+</html>

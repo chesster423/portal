@@ -1,0 +1,52 @@
+[
+  {
+    "id": "hollow-knight",
+    "title": "Hollow Knight",
+    "platform": "PC",
+    "genre": "Metroidvania",
+    "score": 9.5,
+    "date": "2026-03-12",
+    "summary": "Atmospheric exploration with tight combat and unforgettable boss fights.",
+    "body": "Team Cherry delivered a world that feels hand-crafted in every screen. The difficulty curve is fair, upgrades feel meaningful, and the soundtrack carries emotional weight. Silksong cannot come soon enough."
+  },
+  {
+    "id": "elden-ring",
+    "title": "Elden Ring",
+    "platform": "PC",
+    "genre": "Action RPG",
+    "score": 9.2,
+    "date": "2026-02-01",
+    "summary": "Open-world Souls at its most ambitious — overwhelming in the best way.",
+    "body": "The Lands Between reward curiosity. Some legacy dungeons feel copy-pasted, but peaks like Stormveil and Leyndell justify the journey. Co-op jank aside, this is a landmark action RPG."
+  },
+  {
+    "id": "hades",
+    "title": "Hades",
+    "platform": "Switch",
+    "genre": "Roguelike",
+    "score": 9.4,
+    "date": "2026-01-18",
+    "summary": "Roguelike structure with character writing that raises the bar.",
+    "body": "Every run inches the story forward. Weapons feel distinct, boons create wild synergies, and the voice cast sells the family drama. Perfect for short sessions or long binge nights."
+  },
+  {
+    "id": "tunic",
+    "title": "Tunic",
+    "platform": "Xbox",
+    "genre": "Adventure",
+    "score": 8.7,
+    "date": "2025-12-05",
+    "summary": "Isometric Zelda vibes with a manual you actually want to read.",
+    "body": "The in-world instruction booklet is a genius narrative device. Combat is snappy, secrets are layered, and the late-game twists land hard if you have been paying attention."
+  },
+  {
+    "id": "slay-the-spire",
+    "title": "Slay the Spire",
+    "platform": "PC",
+    "genre": "Deckbuilder",
+    "score": 9.0,
+    "date": "2025-11-22",
+    "summary": "The deckbuilder roguelike that defined a genre.",
+    "body": "Four characters, thousands of card combos, and the Spire never plays the same twice. Time sink warning: one more floor syndrome is real."
+  }
+]
