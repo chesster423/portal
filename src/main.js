@@ -133,17 +133,9 @@ function escapeAttr(s) {
   return escapeHtml(s).replace(/'/g, "&#39;");
 }
 
-function openModal(modal, bodyEl, review) {
-  bodyEl.innerHTML = `
-    <div class="modal__poster" style="${posterStyle(review.id)}">
-      <span>${escapeHtml(review.title)}</span>
-    </div>
-    <h2 class="modal__title" id="modal-title">${escapeHtml(review.title)}</h2>
-    <p class="modal__meta">${escapeHtml(review.platform)} · ${escapeHtml(review.genre)} · ${escapeHtml(review.date)} · Score <strong class="score-badge" data-tier="${scoreTier(review.score)}" style="display:inline-block;font-size:1rem;vertical-align:middle;margin-left:0.25rem">${review.score}</strong></p>
-    <p class="modal__summary">${escapeHtml(review.summary)}</p>
-    <p class="modal__body-text">${escapeHtml(review.body)}</p>
-  `;
-  modal.showModal();
+function goToReviewPage(id) {
+  if (!id) return;
+  window.location.href = `${base}review.html?id=${encodeURIComponent(id)}`;
 }
 
 function avgScore(reviews) {
@@ -167,12 +159,6 @@ loadReviews()
     const empty = document.getElementById("empty-state");
     const countHint = document.getElementById("review-count");
     const heroStats = document.getElementById("hero-stats");
-    const modal = document.getElementById("review-modal");
-    const modalBody = document.getElementById("modal-body");
-    const modalClose = document.getElementById("modal-close");
-
-    const byId = Object.fromEntries(reviews.map((r) => [r.id, r]));
-
     function refreshFilters() {
       renderChips(platformEl, uniqueSorted(reviews, "platform"), "platform", state, refresh);
       renderChips(genreEl, uniqueSorted(reviews, "genre"), "genre", state, refresh);
@@ -184,10 +170,7 @@ loadReviews()
       countHint.textContent = `${filtered.length} game${filtered.length === 1 ? "" : "s"}`;
       empty.hidden = filtered.length > 0;
       grid.hidden = filtered.length === 0;
-      renderGrid(grid, filtered, (id) => {
-        const r = byId[id];
-        if (r) openModal(modal, modalBody, r);
-      });
+      renderGrid(grid, filtered, goToReviewPage);
     }
 
     heroStats.hidden = false;
@@ -197,14 +180,6 @@ loadReviews()
     `;
 
     refresh();
-
-    modalClose.addEventListener("click", () => modal.close());
-    modal.addEventListener("click", (e) => {
-      if (e.target === modal) modal.close();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modal.open) modal.close();
-    });
   })
   .catch(() => {
     const grid = document.getElementById("review-grid");
