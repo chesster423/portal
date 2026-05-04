@@ -31,6 +31,54 @@
       </div>
     </header>
 
+    <div class="page-root">
+      <aside class="side-rail side-rail--left" aria-label="Profile and highlights">
+        <div class="side-panel side-panel--identity">
+          <div class="side-identity">
+            <img
+              class="side-identity__avatar"
+              src="https://placehold.co/88x88/2a3242/c8a55b?text=You"
+              width="88"
+              height="88"
+              alt="Avatar — replace in index.html"
+              loading="lazy"
+              decoding="async"
+            />
+            <h3 class="side-identity__name">Chesster</h3>
+            <p class="side-identity__philosophy">
+              Honest scores, strong opinions, and games worth the save file.
+            </p>
+          </div>
+        </div>
+
+        <div class="side-panel side-panel--playing">
+          <p class="side-playing__label">Currently Playing</p>
+          <div class="side-playing__cover">
+            <img
+              src="https://placehold.co/360x203/1a2233/f1ddaf?text=Cover"
+              width="360"
+              height="203"
+              alt="Current game cover — replace in index.html"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+        </div>
+
+        <div class="side-portrait">
+          <img
+            class="side-portrait__img"
+            src="https://placehold.co/280x420/1a2233/c8a55b?text=Portrait"
+            width="280"
+            height="420"
+            alt="Portrait placeholder — replace image URL in index.html"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+      </aside>
+
+      <div class="page-main-column">
     <main>
       <section class="hero">
         <div class="hero__banner" aria-label="Gaming banner placeholder">
@@ -45,14 +93,47 @@
         <div class="hero__stats" id="hero-stats" hidden></div>
       </section>
 
-      <section class="filters" aria-label="Filter reviews">
-        <div class="filters__row">
-          <span class="filters__label">Platform</span>
-          <div class="chip-group" id="filter-platform"></div>
+      <section class="filters" id="filters-section" aria-label="Filter reviews">
+        <div class="filters__bar">
+          <div class="filters__row filters__row--search">
+            <label class="filters__label" for="filter-search">Search</label>
+            <input
+              type="search"
+              id="filter-search"
+              class="filters__search"
+              placeholder="Game name…"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </div>
+          <button
+            type="button"
+            class="filters__toggle"
+            id="filters-toggle"
+            aria-expanded="false"
+            aria-controls="filters-extra"
+          >
+            <span class="filters__toggle-text">More filters</span>
+            <span class="filters__toggle-chevron" aria-hidden="true">▾</span>
+          </button>
         </div>
-        <div class="filters__row">
-          <span class="filters__label">Genre</span>
-          <div class="chip-group" id="filter-genre"></div>
+        <div id="filters-extra" class="filters__extra" hidden>
+          <div class="filters__row">
+            <span class="filters__label">Sort by</span>
+            <div class="chip-group" id="filter-sort-by"></div>
+          </div>
+          <div class="filters__row">
+            <span class="filters__label">Order</span>
+            <div class="chip-group" id="filter-sort-dir"></div>
+          </div>
+          <div class="filters__row">
+            <span class="filters__label">Platform</span>
+            <div class="chip-group" id="filter-platform"></div>
+          </div>
+          <div class="filters__row">
+            <span class="filters__label">Genre</span>
+            <div class="chip-group" id="filter-genre"></div>
+          </div>
         </div>
       </section>
 
@@ -81,6 +162,29 @@
     <footer class="site-footer">
       <p>© <span id="year"></span> Chesster · Gaming reviews</p>
     </footer>
+      </div>
+
+      <aside class="side-rail side-rail--right" aria-label="Rankings and links">
+        <div class="side-panel">
+          <h3 class="side-panel__title">Top 10 games</h3>
+          <ol class="side-list side-list--ranked" id="side-top-10"></ol>
+        </div>
+        <div class="side-panel">
+          <h3 class="side-panel__title">5 latest reviews</h3>
+          <ul class="side-list" id="side-latest-5"></ul>
+        </div>
+        <div class="side-panel">
+          <h3 class="side-panel__title">Social</h3>
+          <nav class="side-social" aria-label="Social media">
+            <a class="side-social__link" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer"
+              >YouTube</a
+            >
+            <a class="side-social__link" href="https://bsky.app/" target="_blank" rel="noopener noreferrer">Bluesky</a>
+            <a class="side-social__link" href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </nav>
+        </div>
+      </aside>
+    </div>
 
     <script type="module" src="/src/main.js"></script>
   </body>
