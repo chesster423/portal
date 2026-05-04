@@ -1,5 +1,7 @@
 import "./dashboard.css";
 import { DASH_SESSION_KEY, readStoredReviews, writeStoredReviews } from "./storage.js";
+import { fetchReviewsFromGoogleSheet } from "./sheets.js";
+import { slugFromTitle } from "./slug.js";
 
 const base = import.meta.env.BASE_URL;
 
@@ -8,25 +10,10 @@ const AUTH_PASS = "chesster423";
 
 const el = (id) => document.getElementById(id);
 
-function slugify(title) {
-  const s = String(title)
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return s || `review-${Date.now()}`;
-}
-
-async function fetchBundledReviews() {
-  const res = await fetch(`${base}reviews.json`);
-  if (!res.ok) throw new Error("Could not load bundled reviews");
-  return res.json();
-}
-
 async function loadWorkingReviews() {
   const stored = readStoredReviews();
   if (stored && stored.length) return stored;
-  return fetchBundledReviews();
+  return fetchReviewsFromGoogleSheet();
 }
 
 function persist(reviews) {
@@ -120,8 +107,8 @@ function clearForm() {
 function reviewFromForm() {
   const idRaw = el("field-id").value.trim();
   const title = el("field-title").value.trim();
-  let id = idRaw || slugify(title);
-  id = slugify(id.replace(/\s+/g, "-"));
+  let id = idRaw || slugFromTitle(title) || `review-${Date.now()}`;
+  id = slugFromTitle(id.replace(/\s+/g, "-")) || id;
   return {
     id,
     title,
@@ -162,7 +149,7 @@ async function bootApp() {
   el("field-title").addEventListener("blur", () => {
     if (el("field-original-id").value) return;
     const t = el("field-title").value.trim();
-    if (t && !el("field-id").value.trim()) el("field-id").value = slugify(t);
+    if (t && !el("field-id").value.trim()) el("field-id").value = slugFromTitle(t);
   });
 }
 
@@ -195,18 +182,18 @@ el("btn-download").addEventListener("click", () => downloadJson(reviewsCache));
 el("btn-reset").addEventListener("click", async () => {
   if (
     !confirm(
-      "Replace local reviews with the bundled reviews.json from the site? Unsaved local-only changes will be lost unless you downloaded them first.",
+      "Replace local reviews with the latest Google Sheet data? Unsaved local-only changes will be lost unless you downloaded them first.",
     )
   ) {
     return;
   }
   try {
-    const bundled = await fetchBundledReviews();
-    reviewsCache = bundled;
+    const fresh = await fetchReviewsFromGoogleSheet();
+    reviewsCache = fresh;
     persist(reviewsCache);
     clearForm();
   } catch {
-    alert("Could not load bundled reviews.json.");
+    alert("Could not load reviews from the Google Sheet.");
   }
 });
 

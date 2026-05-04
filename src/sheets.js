@@ -1,3 +1,5 @@
+import { slugFromTitle } from "./slug.js";
+
 /** Spreadsheet ID from the shared Google Sheet URL. */
 export const REVIEWS_SHEET_ID = "1GJdkyR6EELY7qHzVMQT6H3LREY3CQ1f8IpOiaOLYaKU";
 
@@ -90,13 +92,7 @@ export function rowsToReviews(rows) {
     if (!title) continue;
 
     const idRaw = iId !== -1 ? String(cells[iId] ?? "").trim() : "";
-    const id =
-      idRaw ||
-      title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "") ||
-      `row-${r}`;
+    const id = idRaw || slugFromTitle(title) || `row-${r}`;
 
     const platform = iPlatform !== -1 ? String(cells[iPlatform] ?? "").trim() : "";
     const genre = iGenre !== -1 ? String(cells[iGenre] ?? "").trim() : "";

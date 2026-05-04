@@ -1,20 +1,9 @@
 import "./style.css";
 import { readStoredReviews } from "./storage.js";
 import { fetchReviewsFromGoogleSheet } from "./sheets.js";
+import { posterCandidateUrls, posterFallbackStyle, wirePosterCandidates } from "./poster.js";
 
 const base = import.meta.env.BASE_URL;
-
-function hashHue(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i);
-  return Math.abs(h) % 360;
-}
-
-function posterStyle(id) {
-  const h1 = hashHue(id);
-  const h2 = (h1 + 42) % 360;
-  return `background: linear-gradient(135deg, hsl(${h1}, 70%, 22%) 0%, hsl(${h2}, 65%, 12%) 100%);`;
-}
 
 function scoreTier(score) {
   if (score >= 8.5) return "high";
@@ -22,20 +11,10 @@ function scoreTier(score) {
   return "low";
 }
 
-async function loadBundledReviews() {
-  const res = await fetch(`${base}reviews.json`);
-  if (!res.ok) throw new Error("Could not load reviews");
-  return res.json();
-}
-
 async function loadReviews() {
   const stored = readStoredReviews();
   if (stored && stored.length) return stored;
-  try {
-    return await fetchReviewsFromGoogleSheet();
-  } catch {
-    return loadBundledReviews();
-  }
+  return fetchReviewsFromGoogleSheet();
 }
 
 function uniqueSorted(items, key) {
@@ -111,10 +90,18 @@ function renderFixedChips(container, options, currentValue, onPick) {
 
 function renderGrid(container, reviews, onOpen) {
   container.innerHTML = reviews
-    .map(
-      (r) => `
+    .map((r) => {
+      const urls = posterCandidateUrls(r, base);
+      const src0 = urls[0] || "";
+      const dataUrls = encodeURIComponent(JSON.stringify(urls));
+      const img =
+        urls.length > 0
+          ? `<img class="review-card__poster-bg" src="${escapeAttr(src0)}" alt="" decoding="async" loading="lazy" data-poster-urls="${escapeAttr(dataUrls)}" />`
+          : "";
+      return `
     <article class="review-card cursor-pointer" tabindex="0" role="button" data-id="${r.id}" aria-label="Open review: ${escapeAttr(r.title)}">
-      <div class="review-card__poster" style="${posterStyle(r.id)}">
+      <div class="review-card__poster" style="${posterFallbackStyle(r.id)}">
+        ${img}
         <span>${escapeHtml(r.title)}</span>
       </div>
       <div class="review-card__body">
@@ -129,9 +116,11 @@ function renderGrid(container, reviews, onOpen) {
           <button type="button" class="link-cta" data-open="${escapeAttr(r.id)}">Full review</button>
         </div>
       </div>
-    </article>`,
-    )
+    </article>`;
+    })
     .join("");
+
+  wirePosterCandidates(container);
 
   container.querySelectorAll(".review-card").forEach((card) => {
     const id = card.dataset.id;
@@ -338,5 +327,5 @@ loadReviews()
     renderSidebars([]);
     const grid = document.getElementById("review-grid");
     grid.innerHTML =
-      '<p class="empty-state">Could not load reviews from the Google Sheet or <code>reviews.json</code>. Check the sheet is shared (anyone with the link can view) and column headers match <code>id, title, platform, genre, score, date</code> (or <code>data</code>), <code>summary, body</code>.</p>';
+      '<p class="empty-state">Could not load reviews from the Google Sheet. Check the sheet is shared (anyone with the link can view) and column headers match <code>id, title, platform, genre, score, date</code> (or <code>data</code>), <code>summary, body</code>.</p>';
   });

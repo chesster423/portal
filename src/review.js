@@ -1,6 +1,7 @@
 import "./style.css";
 import { readStoredReviews } from "./storage.js";
 import { fetchReviewsFromGoogleSheet } from "./sheets.js";
+import { posterCandidateUrls, posterFallbackStyle, wirePosterCandidates } from "./poster.js";
 
 const base = import.meta.env.BASE_URL;
 
@@ -8,18 +9,6 @@ function scoreTier(score) {
   if (score >= 8.5) return "high";
   if (score >= 6.5) return "mid";
   return "low";
-}
-
-function hashHue(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) h = (h << 5) - h + str.charCodeAt(i);
-  return Math.abs(h) % 360;
-}
-
-function posterStyle(id) {
-  const h1 = hashHue(id || "review");
-  const h2 = (h1 + 42) % 360;
-  return `background: linear-gradient(135deg, hsl(${h1}, 70%, 30%) 0%, hsl(${h2}, 65%, 18%) 100%);`;
 }
 
 function escapeHtml(s) {
@@ -30,20 +19,14 @@ function escapeHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
-async function loadBundledReviews() {
-  const res = await fetch(`${base}reviews.json`);
-  if (!res.ok) throw new Error("Could not load reviews");
-  return res.json();
+function escapeAttr(s) {
+  return escapeHtml(s).replace(/'/g, "&#39;");
 }
 
 async function loadReviews() {
   const stored = readStoredReviews();
   if (stored && stored.length) return stored;
-  try {
-    return await fetchReviewsFromGoogleSheet();
-  } catch {
-    return loadBundledReviews();
-  }
+  return fetchReviewsFromGoogleSheet();
 }
 
 function renderError(el, message) {
@@ -51,8 +34,17 @@ function renderError(el, message) {
 }
 
 function renderReview(el, review) {
+  const urls = posterCandidateUrls(review, base);
+  const src0 = urls[0] || "";
+  const dataUrls = encodeURIComponent(JSON.stringify(urls));
+  const img =
+    urls.length > 0
+      ? `<img class="review-detail__hero-bg" src="${escapeAttr(src0)}" alt="" decoding="async" loading="eager" data-poster-urls="${escapeAttr(dataUrls)}" />`
+      : "";
+
   el.innerHTML = `
-    <header class="review-detail__hero" style="${posterStyle(review.id)}">
+    <header class="review-detail__hero" style="${posterFallbackStyle(review.id)}">
+      ${img}
       <h1 class="review-detail__title">${escapeHtml(review.title)}</h1>
     </header>
     <div class="review-detail__body">
@@ -67,6 +59,8 @@ function renderReview(el, review) {
       <p class="review-detail__id">Review ID: <code>${escapeHtml(review.id)}</code></p>
     </div>
   `;
+
+  wirePosterCandidates(el);
 }
 
 async function init() {
@@ -90,7 +84,7 @@ async function init() {
   } catch {
     renderError(
       reviewEl,
-      "Could not load reviews from the Google Sheet or reviews.json. Please try again later.",
+      "Could not load reviews from the Google Sheet. Please try again later.",
     );
   }
 }
