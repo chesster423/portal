@@ -33,7 +33,7 @@
 
     <div class="page-root">
       <aside class="side-rail side-rail--left" aria-label="Profile and highlights">
-        <div class="side-panel side-panel--identity">
+        <div class="side-panel side-panel--identity" style="display: none;">
           <div class="side-identity">
             <img
               class="side-identity__avatar"
@@ -53,9 +53,9 @@
 
         <div class="side-panel side-panel--playing">
           <p class="side-playing__label">Currently Playing</p>
-          <div class="side-playing__cover">
+          <div class="side-playing__cover shine-container">
             <img
-              src="https://placehold.co/360x203/1a2233/f1ddaf?text=Cover"
+              src="images/ff-sop-origin.jpg"
               width="360"
               height="203"
               alt="Current game cover — replace in index.html"
@@ -63,34 +63,71 @@
               decoding="async"
             />
           </div>
+
         </div>
 
-        <div class="side-portrait">
-          <img
-            class="side-portrait__img"
-            src="https://placehold.co/280x420/1a2233/c8a55b?text=Portrait"
-            width="280"
-            height="420"
-            alt="Portrait placeholder — replace image URL in index.html"
-            loading="lazy"
-            decoding="async"
-          />
+        <div class="side-panel side-panel--stats" aria-label="Collection stats">
+          <h3 class="side-panel__title">Stats</h3>
+          <div class="side-stats">
+            <div class="side-stats__block">
+              <h4 class="side-stats__heading">Games owned</h4>
+              <div class="side-stats__split">
+                <div class="side-stats__split-item">
+                  <span class="side-stats__meta">Physical</span>
+                  <span class="side-stats__num">80</span>
+                </div>
+                <div class="side-stats__split-item">
+                  <span class="side-stats__meta">Digital</span>
+                  <span class="side-stats__num">21</span>
+                </div>
+              </div>
+            </div>
+            <div class="side-stats__row">
+              <span class="side-stats__label">Games finished</span>
+              <span class="side-stats__num">30</span>
+            </div>
+            <div class="side-stats__row">
+              <span class="side-stats__label">Top genre</span>
+              <span class="side-stats__value">JRPG</span>
+            </div>
+            <div class="side-stats__row">
+              <span class="side-stats__label">Most played platform</span>
+              <span class="side-stats__value">PS5</span>
+            </div>
+            <div class="side-stats__block side-stats__block--stack">
+              <span class="side-stats__label">Preferred combat</span>
+              <div class="side-stats__chips" role="list">
+                <span class="side-stats__chip" role="listitem">Turn-based</span>
+                <span class="side-stats__chip" role="listitem">Real-time</span>
+                <span class="side-stats__chip" role="listitem">Tactical</span>
+              </div>
+            </div>
+            <div class="side-stats__row">
+              <span class="side-stats__label">Story vs gameplay</span>
+              <span class="side-stats__value">Gameplay</span>
+            </div>
+            <div class="side-stats__row">
+              <span class="side-stats__label">100% trophy games</span>
+              <span class="side-stats__num side-stats__num--muted">xx</span>
+            </div>
+          </div>
         </div>
       </aside>
 
       <div class="page-main-column">
     <main>
       <section class="hero">
-        <div class="hero__banner" aria-label="Gaming banner placeholder">
-          <p class="hero__banner-text">Replace with your gaming banner image</p>
+        <div class="hero__banner" aria-label="Site introduction">
+          <div class="hero__banner-inner">
+            <p class="hero__eyebrow">Personal gaming journal</p>
+            <h1 class="hero__title">Play. Score. <span class="hero__accent">Opine.</span></h1>
+            <p class="hero__lead">
+              Honest takes on what I am playing — no ads, no algorithm, just a static site you can host
+              anywhere.
+            </p>
+            <div class="hero__stats" id="hero-stats" hidden></div>
+          </div>
         </div>
-        <p class="hero__eyebrow">Personal gaming journal</p>
-        <h1 class="hero__title">Play. Score. <span class="hero__accent">Opine.</span></h1>
-        <p class="hero__lead">
-          Honest takes on what I am playing — no ads, no algorithm, just a static site you can host
-          anywhere.
-        </p>
-        <div class="hero__stats" id="hero-stats" hidden></div>
       </section>
 
       <section class="filters" id="filters-section" aria-label="Filter reviews">
