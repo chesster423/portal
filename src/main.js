@@ -57,6 +57,8 @@ function filterReviews(reviews, state) {
   });
 }
 
+const REVIEW_PAGE_SIZE = 15;
+
 function sortReviews(list, sortBy, sortDir) {
   const dir = sortDir === "desc" ? -1 : 1;
   return [...list].sort((a, b) => {
@@ -277,6 +279,9 @@ loadReviews()
     const empty = document.getElementById("empty-state");
     const countHint = document.getElementById("review-count");
     const heroStats = document.getElementById("hero-stats");
+    const loadMoreWrap = document.getElementById("review-load-more-wrap");
+    const loadMoreBtn = document.getElementById("review-load-more");
+    let reviewVisibleCount = REVIEW_PAGE_SIZE;
 
     const sortByOptions = [
       { value: "title", label: "Name" },
@@ -300,20 +305,32 @@ loadReviews()
       renderChips(genreEl, uniqueSorted(reviews, "genre"), "genre", state, refresh);
     }
 
-    function refresh() {
+    function refresh(resetPaging = true) {
       refreshFilters();
       const filtered = filterReviews(reviews, state);
       const visible = sortReviews(filtered, state.sortBy, state.sortDir);
+      if (resetPaging) reviewVisibleCount = REVIEW_PAGE_SIZE;
+      reviewVisibleCount = Math.min(reviewVisibleCount, visible.length);
+      const slice = visible.slice(0, reviewVisibleCount);
       countHint.textContent = `${visible.length} game${visible.length === 1 ? "" : "s"}`;
       empty.hidden = visible.length > 0;
       grid.hidden = visible.length === 0;
-      renderGrid(grid, visible, goToReviewPage);
+      renderGrid(grid, slice, goToReviewPage);
+      if (loadMoreWrap && loadMoreBtn) {
+        const hasMore = visible.length > slice.length;
+        loadMoreWrap.hidden = visible.length === 0 || !hasMore;
+      }
     }
 
     searchEl.value = state.search;
     searchEl.addEventListener("input", () => {
       state.search = searchEl.value;
       refresh();
+    });
+
+    loadMoreBtn?.addEventListener("click", () => {
+      reviewVisibleCount += REVIEW_PAGE_SIZE;
+      refresh(false);
     });
 
     heroStats.hidden = false;
