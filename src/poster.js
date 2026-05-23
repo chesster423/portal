@@ -1,4 +1,4 @@
-/** Poster art: `public/images/{basename}.jpg` with fallbacks (roman → arabic, title slug vs id) and `<img>` swap on 404. */
+/** Poster art: `public/images/games/{basename}.jpg` with fallbacks (roman → arabic, title slug vs id) and `<img>` swap on 404. */
 
 import { slugFromTitle } from "./slug.js";
 
@@ -45,8 +45,8 @@ export function posterJpgUrl(basename, base) {
   const b = String(basename || "")
     .trim()
     .replace(/\\/g, "");
-  if (!b) return `${normalizeBaseUrl(base)}images/unknown.jpg`;
-  return `${normalizeBaseUrl(base)}images/${encodeURIComponent(b)}.jpg`;
+  if (!b) return `${normalizeBaseUrl(base)}images/games/unknown.jpg`;
+  return `${normalizeBaseUrl(base)}images/games/${encodeURIComponent(b)}.jpg`;
 }
 
 /**

@@ -140,6 +140,496 @@ body {
   text-shadow: none;
 }
 
+.nav-dropdown {
+  position: relative;
+  align-self: center;
+}
+
+.nav-dropdown__summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.85rem;
+  font-family: inherit;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+
+.nav-dropdown__summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-dropdown__summary::after {
+  content: " ▾";
+  font-size: 0.65em;
+  opacity: 0.75;
+}
+
+.nav-dropdown[open] .nav-dropdown__summary {
+  color: #7e8797;
+}
+
+.nav-dropdown__summary:hover {
+  color: #7e8797;
+  text-shadow: none;
+}
+
+.nav-dropdown__panel {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  min-width: 10.5rem;
+  padding: 0.35rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-panel);
+  box-shadow: var(--shadow-soft);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav-dropdown__panel a {
+  padding: 0.55rem 1rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.78rem;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nav-dropdown__panel a:hover {
+  color: #7f6020;
+  background: rgba(200, 165, 91, 0.08);
+}
+
+.static-page {
+  padding: 0;
+}
+
+.static-page__inner {
+  padding: 1.75rem 1.5rem 2rem;
+}
+
+.static-page__title {
+  margin: 0 0 0.65rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 4vw, 1.85rem);
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.static-page__lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+.static-page--gold .static-page__inner--gold {
+  padding-bottom: 1rem;
+}
+
+.static-page--gold .static-page__inner--gold code {
+  font-size: 0.88em;
+  padding: 0.12em 0.35em;
+  border-radius: 6px;
+  background: rgba(42, 50, 66, 0.12);
+}
+
+/* —— CV document —— */
+.review-page--cv {
+  max-width: 1080px;
+}
+
+.cv-document {
+  margin: 0;
+}
+
+.cv-document__paper {
+  background: #fff;
+  color: #111;
+  border: 1px solid rgba(120, 126, 143, 0.22);
+  border-radius: 4px;
+  box-shadow: var(--shadow-soft);
+  font-family: "Times New Roman", Times, Georgia, serif;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.cv-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.85fr) minmax(0, 1fr);
+  gap: 0;
+}
+
+.cv-main {
+  padding: 1.35rem 1.5rem 1.75rem 1.65rem;
+  min-width: 0;
+}
+
+.cv-sidebar {
+  padding: 1.35rem 1.15rem 1.75rem 1.25rem;
+  border-left: 1px solid #b8b8b8;
+  min-width: 0;
+}
+
+.cv-header {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1.15rem;
+}
+
+.cv-header__photo {
+  flex-shrink: 0;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cv-header__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cv-header__initials {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #666;
+  letter-spacing: 0.04em;
+}
+
+.cv-header__intro {
+  flex: 1;
+  min-width: 0;
+}
+
+.cv-header__name {
+  margin: 0 0 0.45rem;
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.cv-header__summary {
+  margin: 0;
+  text-align: justify;
+  font-size: 0.92rem;
+}
+
+.cv-section {
+  margin-bottom: 1.1rem;
+}
+
+.cv-section__title {
+  margin: 0 0 0.55rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.cv-subsection__title {
+  margin: 0.65rem 0 0.35rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.cv-job {
+  margin-bottom: 0.95rem;
+}
+
+.cv-job__title {
+  margin: 0 0 0.15rem;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.cv-job__title a {
+  color: #0563c1;
+  text-decoration: underline;
+}
+
+.cv-job__dates {
+  margin: 0 0 0.35rem;
+  font-size: 0.92rem;
+}
+
+.cv-job__bullets {
+  margin: 0 0 0.35rem;
+  padding-left: 1.35rem;
+}
+
+.cv-job__bullets ul {
+  margin: 0.25rem 0 0;
+  padding-left: 1.2rem;
+}
+
+.cv-job__bullets li {
+  margin-bottom: 0.2rem;
+}
+
+.cv-tags {
+  margin: 0.2rem 0 0;
+  line-height: 1.55;
+}
+
+.cv-tags span {
+  color: #0563c1;
+}
+
+.cv-tags--label {
+  color: #111;
+  font-size: 0.92rem;
+}
+
+.cv-education {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cv-education li {
+  margin-bottom: 0.45rem;
+}
+
+.cv-software {
+  margin: 0;
+  text-align: justify;
+}
+
+.cv-contact {
+  margin: 0 0 1rem;
+  font-style: normal;
+  line-height: 1.5;
+}
+
+.cv-contact a {
+  color: #0563c1;
+  text-decoration: none;
+}
+
+.cv-contact a:hover {
+  text-decoration: underline;
+}
+
+.cv-sidebar__block {
+  margin-bottom: 0.95rem;
+}
+
+.cv-sidebar__list {
+  margin: 0;
+  padding-left: 1.2rem;
+}
+
+.cv-sidebar__list li {
+  margin-bottom: 0.15rem;
+}
+
+.cv-sidebar__list--achievements {
+  padding-left: 1.15rem;
+}
+
+.cv-sidebar__list--achievements li {
+  margin-bottom: 0.4rem;
+}
+
+.cv-sidebar__text {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .cv-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .cv-sidebar {
+    border-left: none;
+    border-top: 1px solid #b8b8b8;
+    padding-top: 1.25rem;
+  }
+
+  .cv-header {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .cv-header__summary {
+    text-align: left;
+  }
+}
+
+@media print {
+  .cv-no-print,
+  .bg-grid,
+  .bg-glow {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .review-page--cv {
+    max-width: none;
+    padding: 0;
+  }
+
+  .cv-document__paper {
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+}
+
+.gold-gallery {
+  column-count: 2;
+  column-gap: 0.65rem;
+  padding: 0 0.75rem 1.35rem;
+}
+
+@media (min-width: 520px) {
+  .gold-gallery {
+    column-count: 3;
+    column-gap: 0.7rem;
+  }
+}
+
+@media (min-width: 800px) {
+  .gold-gallery {
+    column-count: 4;
+    column-gap: 0.75rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .gold-gallery {
+    column-count: 5;
+  }
+}
+
+.gold-gallery__item {
+  margin: 0 0 0.65rem;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.gold-gallery__trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: zoom-in;
+  background: rgba(20, 24, 34, 0.35);
+  box-shadow: 0 2px 10px rgba(8, 10, 18, 0.12);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.gold-gallery__trigger:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(8, 10, 18, 0.2);
+}
+
+.gold-gallery__trigger:focus-visible {
+  outline: 2px solid rgba(200, 165, 91, 0.85);
+  outline-offset: 3px;
+}
+
+.gold-gallery__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+html.gold-lightbox-open {
+  overflow: hidden;
+}
+
+.gold-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* [hidden] alone loses to `.gold-lightbox { display: grid }` (same specificity, author wins). */
+.gold-lightbox[hidden] {
+  display: none !important;
+  pointer-events: none;
+}
+
+.gold-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 16, 0.82);
+  backdrop-filter: blur(6px);
+}
+
+.gold-lightbox__frame {
+  position: relative;
+  z-index: 1;
+  max-width: min(96vw, 1100px);
+  max-height: min(92vh, 900px);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0e1018;
+}
+
+.gold-lightbox__img {
+  display: block;
+  max-width: min(96vw, 1100px);
+  max-height: min(92vh, 900px);
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+.gold-lightbox__close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 2;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: rgba(12, 14, 22, 0.75);
+  color: #fff;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.gold-lightbox__close:hover {
+  background: rgba(30, 36, 52, 0.95);
+}
+
 .page-root {
   position: relative;
   z-index: 1;

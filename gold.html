@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Gold collection." />
+    <title>Gold — Chesster</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow" aria-hidden="true"></div>
+
+    <main class="review-page">
+      <a class="back-btn" href="index.html">← Back to reviews</a>
+      <article class="review-detail static-page static-page--gold" aria-labelledby="gold-title">
+        <div class="static-page__inner static-page__inner--gold">
+          <h1 id="gold-title" class="static-page__title">Gold</h1>
+          <p class="static-page__lead">
+            Masonry gallery (Pinterest-style). Showing site images from <code>public/images</code> as placeholders
+            until gold photos are uploaded.
+          </p>
+        </div>
+        <div
+          class="gold-gallery"
+          id="gold-gallery"
+          role="region"
+          aria-label="Gold collection gallery"
+        ></div>
+      </article>
+    </main>
+
+    <script type="module" src="/src/gold-gallery.js"></script>
+  </body>
+</html>

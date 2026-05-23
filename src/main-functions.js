@@ -251,7 +251,7 @@ export function initFiltersExpand() {
 
 export function init(base) {
   document.getElementById("year").textContent = String(new Date().getFullYear());
-  const bannerUrl = `${String(base).replace(/\/?$/, "/")}images/banner.png`;
+  const bannerUrl = `${String(base).replace(/\/?$/, "/")}images/games/banner.png`;
   document.documentElement.style.setProperty("--hero-banner-image", `url("${bannerUrl}")`);
   initFiltersExpand();
 }
