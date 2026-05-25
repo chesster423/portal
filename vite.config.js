@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { gunplaRollupInputs, gunplaVitePlugin } from "./plugins/gunpla.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
@@ -8,6 +9,7 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 // Change this to match your repository name (or "/" for a user site).
 export default defineConfig({
   base: "/portal/",
+  plugins: [gunplaVitePlugin()],
   build: {
     rollupOptions: {
       input: {
@@ -17,6 +19,7 @@ export default defineConfig({
         gunpla: resolve(__dirname, "gunpla.html"),
         gold: resolve(__dirname, "gold.html"),
         cv: resolve(__dirname, "cv.html"),
+        ...gunplaRollupInputs(),
       },
     },
   },
