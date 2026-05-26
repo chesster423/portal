@@ -56,6 +56,16 @@ export function buildGunplaLightbox() {
             <span class="gunpla-lightbox__picker-label">Custom</span>
             <input type="color" class="gunpla-lightbox__color-input" value="${DEFAULT_GUNPLA_BG}" aria-label="Custom background color" />
           </label>
+          <button
+            type="button"
+            class="gunpla-lightbox__flip"
+            aria-pressed="false"
+            aria-label="Flip image horizontally"
+            title="Flip horizontally"
+          >
+            <span class="gunpla-lightbox__flip-icon" aria-hidden="true">⇋</span>
+            <span class="gunpla-lightbox__flip-label">Flip</span>
+          </button>
         </div>
         <button type="button" class="gunpla-lightbox__close" aria-label="Close preview">×</button>
       </div>
@@ -74,8 +84,17 @@ export function buildGunplaLightbox() {
   const backdrop = root.querySelector(".gunpla-lightbox__backdrop");
   const swatches = [...root.querySelectorAll(".gunpla-lightbox__swatch")];
   const colorInput = root.querySelector(".gunpla-lightbox__color-input");
+  const flipBtn = root.querySelector(".gunpla-lightbox__flip");
 
   let lastFocus = null;
+  let flipped = false;
+
+  function setFlipped(on) {
+    flipped = on;
+    imgEl.classList.toggle("is-flipped", on);
+    flipBtn.classList.toggle("is-active", on);
+    flipBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  }
 
   function setPreviewBg(color) {
     canvas.style.setProperty("--gunpla-preview-bg", color);
@@ -93,6 +112,7 @@ export function buildGunplaLightbox() {
     lastFocus = document.activeElement;
     imgEl.src = src;
     imgEl.alt = alt;
+    setFlipped(false);
     setPreviewBg(DEFAULT_GUNPLA_BG);
     root.hidden = false;
     document.documentElement.classList.add("gunpla-lightbox-open");
@@ -103,6 +123,7 @@ export function buildGunplaLightbox() {
     root.hidden = true;
     imgEl.removeAttribute("src");
     imgEl.alt = "";
+    setFlipped(false);
     document.documentElement.classList.remove("gunpla-lightbox-open");
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
   }
@@ -120,6 +141,7 @@ export function buildGunplaLightbox() {
     btn.addEventListener("click", () => setPreviewBg(btn.dataset.bg));
   }
   colorInput.addEventListener("input", () => setPreviewBg(colorInput.value));
+  flipBtn.addEventListener("click", () => setFlipped(!flipped));
 
   setPreviewBg(DEFAULT_GUNPLA_BG);
 

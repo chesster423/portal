@@ -860,6 +860,49 @@ html.gunpla-lightbox-open {
   border-radius: 999px;
 }
 
+.gunpla-lightbox__flip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.55rem;
+  margin: 0;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease;
+}
+
+.gunpla-lightbox__flip:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.gunpla-lightbox__flip.is-active,
+.gunpla-lightbox__flip[aria-pressed="true"] {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(200, 165, 91, 0.85);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.gunpla-lightbox__flip-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.gunpla-lightbox__flip-label {
+  letter-spacing: 0.04em;
+}
+
+.gunpla-lightbox__img.is-flipped {
+  transform: scaleX(-1);
+}
+
 .gunpla-lightbox__close {
   flex-shrink: 0;
   width: 2.5rem;
