@@ -62,6 +62,28 @@ export function buildGunplaGradientCss({ type, angle, colors }) {
   return `linear-gradient(${deg}deg, ${formatGunplaGradientStops(stops)})`;
 }
 
+export function getGradientColorLabel(type, index, count) {
+  if (type === "linear") {
+    if (count === 2) return index === 0 ? "Start" : "End";
+    return String(index + 1);
+  }
+
+  if (count === 2) return index === 0 ? "Left" : "Right";
+  if (count === 3) {
+    if (index === 0) return "Left";
+    if (index === 1) return "Right";
+    return "Base";
+  }
+  if (count === 4) {
+    return ["Left", "Right", "Blend", "Base"][index] ?? String(index + 1);
+  }
+  if (count === 5) {
+    return ["Left", "Right", "L-blend", "R-blend", "Base"][index] ?? String(index + 1);
+  }
+
+  return String(index + 1);
+}
+
 export function gunplaBaseUrl() {
   return `${String(import.meta.env.BASE_URL || "/").replace(/\/?$/, "/")}images/gunpla/`;
 }
@@ -102,49 +124,52 @@ export function buildGunplaLightbox() {
     <div class="gunpla-lightbox__panel">
       <div class="gunpla-lightbox__toolbar">
         <div class="gunpla-lightbox__bg" role="group" aria-label="Preview background">
-          <span class="gunpla-lightbox__bg-label">Background</span>
-          <div class="gunpla-lightbox__swatches">${presetButtons}</div>
-          <label class="gunpla-lightbox__picker gunpla-lightbox__solid-only" title="Custom color">
-            <span class="gunpla-lightbox__picker-label">Custom</span>
-            <input type="color" class="gunpla-lightbox__color-input" value="${DEFAULT_GUNPLA_BG}" aria-label="Custom background color" />
-          </label>
-          <div class="gunpla-lightbox__bg-mode" role="group" aria-label="Background type">
-            <button type="button" class="gunpla-lightbox__mode-btn is-active" data-mode="solid" aria-pressed="true">Solid</button>
-            <button type="button" class="gunpla-lightbox__mode-btn" data-mode="gradient" aria-pressed="false">Gradient</button>
+          <div class="gunpla-lightbox__bg-head">
+            <span class="gunpla-lightbox__bg-label">Background</span>
+            <div class="gunpla-lightbox__bg-mode" role="group" aria-label="Background type">
+              <button type="button" class="gunpla-lightbox__mode-btn is-active" data-mode="solid" aria-pressed="true">Solid</button>
+              <button type="button" class="gunpla-lightbox__mode-btn" data-mode="gradient" aria-pressed="false">Gradient</button>
+            </div>
+            <button
+              type="button"
+              class="gunpla-lightbox__flip"
+              aria-pressed="false"
+              aria-label="Flip image horizontally"
+              title="Flip horizontally"
+            >
+              <span class="gunpla-lightbox__flip-icon" aria-hidden="true">⇋</span>
+              <span class="gunpla-lightbox__flip-label">Flip</span>
+            </button>
           </div>
-          <div class="gunpla-lightbox__gradient" hidden>
-            <div class="gunpla-lightbox__gradient-type" role="group" aria-label="Gradient type">
-              <button type="button" class="gunpla-lightbox__type-btn is-active" data-type="linear" aria-pressed="true">Linear</button>
-              <button type="button" class="gunpla-lightbox__type-btn" data-type="radial" aria-pressed="false">Radial</button>
+          <div class="gunpla-lightbox__bg-panel gunpla-lightbox__bg-panel--solid">
+            <div class="gunpla-lightbox__swatches">${presetButtons}</div>
+            <label class="gunpla-lightbox__picker" title="Custom color">
+              <span class="gunpla-lightbox__picker-label">Custom</span>
+              <input type="color" class="gunpla-lightbox__color-input" value="${DEFAULT_GUNPLA_BG}" aria-label="Custom background color" />
+            </label>
+          </div>
+          <div class="gunpla-lightbox__bg-panel gunpla-lightbox__bg-panel--gradient" hidden>
+            <div class="gunpla-lightbox__gradient-bar">
+              <div class="gunpla-lightbox__gradient-type" role="group" aria-label="Gradient type">
+                <button type="button" class="gunpla-lightbox__type-btn is-active" data-type="linear" aria-pressed="true">Linear</button>
+                <button type="button" class="gunpla-lightbox__type-btn" data-type="radial" aria-pressed="false">Radial</button>
+              </div>
+              <label class="gunpla-lightbox__angle">
+                <span class="gunpla-lightbox__picker-label">Angle</span>
+                <input
+                  type="number"
+                  class="gunpla-lightbox__angle-input"
+                  min="0"
+                  max="360"
+                  step="1"
+                  value="${DEFAULT_GUNPLA_GRADIENT.angle}"
+                  aria-label="Linear gradient angle in degrees"
+                />
+                <span class="gunpla-lightbox__angle-unit" aria-hidden="true">°</span>
+              </label>
             </div>
             <div class="gunpla-lightbox__gradient-colors" role="group" aria-label="Gradient colors"></div>
-            <label class="gunpla-lightbox__angle">
-              <span class="gunpla-lightbox__picker-label">Angle</span>
-              <input
-                type="number"
-                class="gunpla-lightbox__angle-input"
-                min="0"
-                max="360"
-                step="1"
-                value="${DEFAULT_GUNPLA_GRADIENT.angle}"
-                aria-label="Linear gradient angle in degrees"
-              />
-              <span class="gunpla-lightbox__angle-unit" aria-hidden="true">°</span>
-            </label>
-            <p class="gunpla-lightbox__gradient-hint gunpla-lightbox__gradient-hint--radial" hidden>
-              Dual radial glows overlap in the center. Use 3+ colors: last color is the base.
-            </p>
           </div>
-          <button
-            type="button"
-            class="gunpla-lightbox__flip"
-            aria-pressed="false"
-            aria-label="Flip image horizontally"
-            title="Flip horizontally"
-          >
-            <span class="gunpla-lightbox__flip-icon" aria-hidden="true">⇋</span>
-            <span class="gunpla-lightbox__flip-label">Flip</span>
-          </button>
         </div>
         <button type="button" class="gunpla-lightbox__close" aria-label="Close preview">×</button>
       </div>
@@ -165,12 +190,12 @@ export function buildGunplaLightbox() {
   const colorInput = root.querySelector(".gunpla-lightbox__color-input");
   const flipBtn = root.querySelector(".gunpla-lightbox__flip");
   const modeBtns = [...root.querySelectorAll(".gunpla-lightbox__mode-btn")];
-  const gradientPanel = root.querySelector(".gunpla-lightbox__gradient");
+  const solidPanel = root.querySelector(".gunpla-lightbox__bg-panel--solid");
+  const gradientPanel = root.querySelector(".gunpla-lightbox__bg-panel--gradient");
   const typeBtns = [...root.querySelectorAll(".gunpla-lightbox__type-btn")];
   const gradientColorsEl = root.querySelector(".gunpla-lightbox__gradient-colors");
   const angleInput = root.querySelector(".gunpla-lightbox__angle-input");
   const angleLabel = root.querySelector(".gunpla-lightbox__angle");
-  const radialHint = root.querySelector(".gunpla-lightbox__gradient-hint--radial");
 
   let lastFocus = null;
   let flipped = false;
@@ -216,61 +241,100 @@ export function buildGunplaLightbox() {
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-pressed", active ? "true" : "false");
     }
-    if (rebuildColors) renderGradientColors();
     angleInput.value = String(gradient.angle);
     angleLabel.hidden = gradient.type !== "linear";
     angleInput.disabled = gradient.type !== "linear";
-    radialHint.hidden = gradient.type !== "radial";
+    if (rebuildColors) {
+      renderGradientColors();
+    } else {
+      updateGradientColorLabels();
+    }
+  }
+
+  function updateGradientColorLabels() {
+    for (const stop of gradientColorsEl.querySelectorAll(".gunpla-lightbox__gradient-stop")) {
+      const index = Number(stop.dataset.index);
+      const labelText = getGradientColorLabel(
+        gradient.type,
+        index,
+        gradient.colors.length,
+      );
+      const label = stop.querySelector(".gunpla-lightbox__gradient-stop-label");
+      const input = stop.querySelector(".gunpla-lightbox__gradient-color-input");
+      const removeBtn = stop.querySelector(".gunpla-lightbox__gradient-remove");
+      if (label) label.textContent = labelText;
+      if (input) {
+        input.setAttribute("aria-label", `${labelText} gradient color`);
+        stop.querySelector(".gunpla-lightbox__gradient-stop-picker")?.setAttribute(
+          "title",
+          labelText,
+        );
+      }
+      if (removeBtn) {
+        removeBtn.setAttribute("aria-label", `Remove ${labelText} color`);
+      }
+    }
   }
 
   function renderGradientColors() {
     gradientColorsEl.innerHTML = "";
 
     gradient.colors.forEach((color, index) => {
-      const row = document.createElement("div");
-      row.className = "gunpla-lightbox__gradient-color";
-
-      const label = document.createElement("label");
-      label.className = "gunpla-lightbox__picker";
-      label.title = `Gradient color ${index + 1}`;
+      const stop = document.createElement("div");
+      stop.className = "gunpla-lightbox__gradient-stop";
+      stop.dataset.index = String(index);
 
       const labelText = document.createElement("span");
-      labelText.className = "gunpla-lightbox__picker-label";
-      labelText.textContent = String(index + 1);
+      labelText.className = "gunpla-lightbox__gradient-stop-label";
+      labelText.textContent = getGradientColorLabel(
+        gradient.type,
+        index,
+        gradient.colors.length,
+      );
+
+      const picker = document.createElement("label");
+      picker.className = "gunpla-lightbox__gradient-stop-picker";
+      picker.title = labelText.textContent;
 
       const input = document.createElement("input");
       input.type = "color";
       input.className = "gunpla-lightbox__gradient-color-input";
       input.value = color;
-      input.setAttribute("aria-label", `Gradient color ${index + 1}`);
+      input.setAttribute(
+        "aria-label",
+        `${labelText.textContent} gradient color`,
+      );
       input.addEventListener("input", () => {
         gradient.colors[index] = input.value;
         applyPreviewBg();
       });
 
-      label.append(labelText, input);
+      picker.append(input);
 
-      const removeBtn = document.createElement("button");
-      removeBtn.type = "button";
-      removeBtn.className = "gunpla-lightbox__gradient-remove";
-      removeBtn.textContent = "×";
-      removeBtn.setAttribute("aria-label", `Remove color ${index + 1}`);
-      removeBtn.disabled = gradient.colors.length <= MIN_GUNPLA_GRADIENT_COLORS;
-      removeBtn.addEventListener("click", () => {
-        if (gradient.colors.length <= MIN_GUNPLA_GRADIENT_COLORS) return;
-        const next = gradient.colors.filter((_, i) => i !== index);
-        updateGradient({ colors: next });
-      });
+      stop.append(labelText, picker);
 
-      row.append(label, removeBtn);
-      gradientColorsEl.appendChild(row);
+      if (gradient.colors.length > MIN_GUNPLA_GRADIENT_COLORS) {
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "gunpla-lightbox__gradient-remove";
+        removeBtn.textContent = "×";
+        removeBtn.setAttribute("aria-label", `Remove ${labelText.textContent} color`);
+        removeBtn.addEventListener("click", () => {
+          const next = gradient.colors.filter((_, i) => i !== index);
+          updateGradient({ colors: next });
+        });
+        stop.appendChild(removeBtn);
+      }
+
+      gradientColorsEl.appendChild(stop);
     });
 
     if (gradient.colors.length < MAX_GUNPLA_GRADIENT_COLORS) {
       const addBtn = document.createElement("button");
       addBtn.type = "button";
       addBtn.className = "gunpla-lightbox__gradient-add";
-      addBtn.textContent = "+ Color";
+      addBtn.textContent = "+";
+      addBtn.title = "Add color";
       addBtn.setAttribute(
         "aria-label",
         `Add gradient color (${gradient.colors.length} of ${MAX_GUNPLA_GRADIENT_COLORS})`,
@@ -289,10 +353,8 @@ export function buildGunplaLightbox() {
       btn.classList.toggle("is-active", active);
       btn.setAttribute("aria-pressed", active ? "true" : "false");
     }
+    solidPanel.hidden = bgMode !== "solid";
     gradientPanel.hidden = bgMode !== "gradient";
-    root.querySelectorAll(".gunpla-lightbox__solid-only").forEach((el) => {
-      el.hidden = bgMode !== "solid";
-    });
     syncSolidUi();
     syncGradientUi({ rebuildColors: bgMode === "gradient" });
   }
@@ -312,7 +374,7 @@ export function buildGunplaLightbox() {
 
   function setGradientType(type) {
     gradient.type = type;
-    syncGradientUi();
+    syncGradientUi({ rebuildColors: false });
     applyPreviewBg();
   }
 
