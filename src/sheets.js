@@ -58,7 +58,7 @@ function normHeader(h) {
 
 /**
  * @param {string[][]} rows
- * @returns {Array<{ id: string, title: string, platform: string, genre: string, score: number, date: string, summary: string, body: string }>}
+ * @returns {Array<{ id: string, title: string, platform: string, genre: string, score: number, date: string, summary: string, body: string, polished_review: string }>}
  */
 export function rowsToReviews(rows) {
   if (!rows.length) return [];
@@ -80,6 +80,7 @@ export function rowsToReviews(rows) {
   const iDate = idx("date");
   const iSummary = idx("summary");
   const iBody = idx("body");
+  const iPolished = idx("polished_review");
 
   if (iTitle === -1 || iSummary === -1 || iBody === -1) {
     throw new Error("Sheet must include columns: title, summary, body (and id, platform, genre, score, date or data).");
@@ -101,6 +102,8 @@ export function rowsToReviews(rows) {
     const date = iDate !== -1 ? String(cells[iDate] ?? "").trim() : "";
     const summary = String(cells[iSummary] ?? "").trim();
     const body = String(cells[iBody] ?? "").trim();
+    const polished_review =
+      iPolished !== -1 ? String(cells[iPolished] ?? "").trim() : "";
 
     if (!summary || !body) continue;
 
@@ -113,6 +116,7 @@ export function rowsToReviews(rows) {
       date: date || "—",
       summary,
       body,
+      polished_review,
     });
   }
   return out;

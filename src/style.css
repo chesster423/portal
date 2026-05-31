@@ -2315,6 +2315,42 @@ main {
   font-weight: 600;
 }
 
+.review-view-toggle {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 0 0 0.95rem;
+}
+
+.review-view-toggle__btn {
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--muted);
+  background: transparent;
+  transition:
+    border-color 0.2s,
+    color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
+
+.review-view-toggle__btn:hover {
+  color: var(--text);
+  border-color: rgba(200, 165, 91, 0.55);
+}
+
+.review-view-toggle__btn.is-active {
+  color: #2b2f39;
+  background: linear-gradient(130deg, rgba(241, 221, 175, 0.9), rgba(200, 165, 91, 0.95));
+  border-color: rgba(180, 139, 52, 0.85);
+  box-shadow: 0 8px 22px rgba(200, 165, 91, 0.32);
+}
+
 .review-detail__text {
   margin: 0;
   font-size: 1.05rem;
