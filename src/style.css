@@ -1142,8 +1142,60 @@ html.gunpla-lightbox-open {
   letter-spacing: 0.04em;
 }
 
-.gunpla-lightbox__img.is-flipped {
-  transform: scaleX(-1);
+.gunpla-lightbox__zoom {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+  padding: 0.45rem 0.55rem;
+  border-radius: var(--radius);
+  background: rgba(12, 14, 22, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.gunpla-lightbox__zoom-btn {
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 999px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-ui);
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.gunpla-lightbox__zoom-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.gunpla-lightbox__zoom-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.gunpla-lightbox__zoom-reset {
+  font-size: 0.95rem;
+}
+
+.gunpla-lightbox__zoom-value {
+  min-width: 3.1rem;
+  font-family: var(--font-ui);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .gunpla-lightbox__close {
@@ -1174,11 +1226,34 @@ html.gunpla-lightbox-open {
 }
 
 .gunpla-lightbox__canvas {
+  position: relative;
   display: grid;
   place-items: center;
   background: var(--gunpla-preview-bg, #000);
   min-height: min(70vh, 720px);
   max-height: min(82vh, 820px);
+  overflow: hidden;
+  touch-action: none;
+}
+
+.gunpla-lightbox__canvas.is-loupe {
+  cursor: zoom-in;
+}
+
+.gunpla-lightbox__canvas.is-zoomed {
+  cursor: grab;
+}
+
+.gunpla-lightbox__canvas.is-zoomed.is-panning {
+  cursor: grabbing;
+}
+
+.gunpla-lightbox__viewport {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
 }
 
 .gunpla-lightbox__img {
@@ -1188,6 +1263,44 @@ html.gunpla-lightbox-open {
   width: auto;
   height: auto;
   object-fit: contain;
+  transform-origin: center center;
+  transition: transform 0.12s ease-out;
+  will-change: transform;
+}
+
+.gunpla-lightbox__canvas.is-panning .gunpla-lightbox__img {
+  transition: none;
+}
+
+.gunpla-lightbox__lens {
+  position: absolute;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+  background: #000;
+}
+
+.gunpla-lightbox__lens::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.gunpla-lightbox__lens-img {
+  display: block;
+  max-width: none;
+  max-height: none;
+  transform-origin: top left;
+  pointer-events: none;
 }
 
 .page-root {

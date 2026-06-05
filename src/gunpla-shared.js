@@ -171,11 +171,28 @@ export function buildGunplaLightbox() {
             <div class="gunpla-lightbox__gradient-colors" role="group" aria-label="Gradient colors"></div>
           </div>
         </div>
+        <div class="gunpla-lightbox__zoom" role="group" aria-label="Image zoom">
+          <button type="button" class="gunpla-lightbox__zoom-btn" data-zoom="out" aria-label="Zoom out">−</button>
+          <span class="gunpla-lightbox__zoom-value" aria-live="polite">100%</span>
+          <button type="button" class="gunpla-lightbox__zoom-btn" data-zoom="in" aria-label="Zoom in">+</button>
+          <button
+            type="button"
+            class="gunpla-lightbox__zoom-btn gunpla-lightbox__zoom-reset"
+            data-zoom="reset"
+            aria-label="Reset zoom"
+            title="Reset zoom"
+          >↺</button>
+        </div>
         <button type="button" class="gunpla-lightbox__close" aria-label="Close preview">×</button>
       </div>
       <div class="gunpla-lightbox__frame">
         <div class="gunpla-lightbox__canvas">
-          <img class="gunpla-lightbox__img" src="" alt="" decoding="async" />
+          <div class="gunpla-lightbox__viewport">
+            <img class="gunpla-lightbox__img" src="" alt="" decoding="async" />
+          </div>
+          <div class="gunpla-lightbox__lens" hidden aria-hidden="true">
+            <img class="gunpla-lightbox__lens-img" src="" alt="" decoding="async" tabindex="-1" />
+          </div>
         </div>
       </div>
     </div>
@@ -184,6 +201,10 @@ export function buildGunplaLightbox() {
 
   const canvas = root.querySelector(".gunpla-lightbox__canvas");
   const imgEl = root.querySelector(".gunpla-lightbox__img");
+  const lensEl = root.querySelector(".gunpla-lightbox__lens");
+  const lensImgEl = root.querySelector(".gunpla-lightbox__lens-img");
+  const zoomValueEl = root.querySelector(".gunpla-lightbox__zoom-value");
+  const zoomBtns = [...root.querySelectorAll(".gunpla-lightbox__zoom-btn")];
   const closeBtn = root.querySelector(".gunpla-lightbox__close");
   const backdrop = root.querySelector(".gunpla-lightbox__backdrop");
   const swatches = [...root.querySelectorAll(".gunpla-lightbox__swatch")];
@@ -197,8 +218,24 @@ export function buildGunplaLightbox() {
   const angleInput = root.querySelector(".gunpla-lightbox__angle-input");
   const angleLabel = root.querySelector(".gunpla-lightbox__angle");
 
+  const ZOOM_MIN = 0.5;
+  const ZOOM_MAX = 4;
+  const ZOOM_STEP = 0.25;
+  const LOUPE_ZOOM = 2.5;
+  const LENS_SIZE = 140;
+  const LENS_OFFSET = 24;
+  const canLoupe = !window.matchMedia("(pointer: coarse)").matches;
+
   let lastFocus = null;
   let flipped = false;
+  let zoom = 1;
+  let panX = 0;
+  let panY = 0;
+  let isPanning = false;
+  let panStartX = 0;
+  let panStartY = 0;
+  let panOriginX = 0;
+  let panOriginY = 0;
   let bgMode = "solid";
   let solidColor = DEFAULT_GUNPLA_BG;
   let gradient = {
@@ -207,11 +244,116 @@ export function buildGunplaLightbox() {
     colors: [...DEFAULT_GUNPLA_GRADIENT.colors],
   };
 
+  function clampZoom(value) {
+    return Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, value));
+  }
+
+  function formatZoomLabel(value) {
+    return `${Math.round(value * 100)}%`;
+  }
+
+  function syncZoomUi() {
+    zoomValueEl.textContent = formatZoomLabel(zoom);
+    for (const btn of zoomBtns) {
+      const action = btn.dataset.zoom;
+      if (action === "in") btn.disabled = zoom >= ZOOM_MAX;
+      else if (action === "out") btn.disabled = zoom <= ZOOM_MIN;
+      else if (action === "reset") btn.disabled = zoom === 1 && panX === 0 && panY === 0;
+    }
+    canvas.classList.toggle("is-zoomed", zoom > 1);
+    canvas.classList.toggle("is-loupe", canLoupe && zoom === 1);
+    if (zoom > 1) hideLens();
+  }
+
+  function applyImageTransform() {
+    const scaleX = (flipped ? -1 : 1) * zoom;
+    imgEl.style.transform = `translate(${panX}px, ${panY}px) scale(${scaleX}, ${zoom})`;
+  }
+
+  function resetZoom() {
+    zoom = 1;
+    panX = 0;
+    panY = 0;
+    applyImageTransform();
+    syncZoomUi();
+  }
+
+  function setZoom(nextZoom) {
+    zoom = clampZoom(nextZoom);
+    if (zoom === 1) {
+      panX = 0;
+      panY = 0;
+    }
+    applyImageTransform();
+    syncZoomUi();
+  }
+
+  function adjustZoom(delta) {
+    setZoom(clampZoom(Math.round((zoom + delta) / ZOOM_STEP) * ZOOM_STEP));
+  }
+
+  function hideLens() {
+    lensEl.hidden = true;
+  }
+
+  function updateLens(clientX, clientY) {
+    if (!canLoupe || zoom !== 1 || isPanning) {
+      hideLens();
+      return;
+    }
+
+    const imgRect = imgEl.getBoundingClientRect();
+    if (imgRect.width < 1 || imgRect.height < 1) {
+      hideLens();
+      return;
+    }
+
+    const inside =
+      clientX >= imgRect.left &&
+      clientX <= imgRect.right &&
+      clientY >= imgRect.top &&
+      clientY <= imgRect.bottom;
+
+    if (!inside) {
+      hideLens();
+      return;
+    }
+
+    const canvasRect = canvas.getBoundingClientRect();
+    const relX = (clientX - imgRect.left) / imgRect.width;
+    const relY = (clientY - imgRect.top) / imgRect.height;
+    const focusX = flipped ? 1 - relX : relX;
+    const lensW = imgRect.width * LOUPE_ZOOM;
+    const lensH = imgRect.height * LOUPE_ZOOM;
+    const half = LENS_SIZE / 2;
+
+    let left = clientX - canvasRect.left + LENS_OFFSET;
+    let top = clientY - canvasRect.top + LENS_OFFSET;
+
+    if (left + LENS_SIZE > canvasRect.width) {
+      left = clientX - canvasRect.left - LENS_SIZE - LENS_OFFSET;
+    }
+    if (top + LENS_SIZE > canvasRect.height) {
+      top = clientY - canvasRect.top - LENS_SIZE - LENS_OFFSET;
+    }
+
+    lensEl.hidden = false;
+    lensEl.style.width = `${LENS_SIZE}px`;
+    lensEl.style.height = `${LENS_SIZE}px`;
+    lensEl.style.left = `${left}px`;
+    lensEl.style.top = `${top}px`;
+
+    lensImgEl.style.width = `${lensW}px`;
+    lensImgEl.style.height = `${lensH}px`;
+    lensImgEl.style.transform = `translate(${half - focusX * lensW}px, ${half - relY * lensH}px)`;
+  }
+
   function setFlipped(on) {
     flipped = on;
     imgEl.classList.toggle("is-flipped", on);
     flipBtn.classList.toggle("is-active", on);
     flipBtn.setAttribute("aria-pressed", on ? "true" : "false");
+    applyImageTransform();
   }
 
   function applyPreviewBg() {
@@ -391,6 +533,9 @@ export function buildGunplaLightbox() {
     lastFocus = document.activeElement;
     imgEl.src = src;
     imgEl.alt = alt;
+    lensImgEl.src = src;
+    lensImgEl.alt = "";
+    resetZoom();
     setFlipped(false);
     bgMode = "solid";
     solidColor = DEFAULT_GUNPLA_BG;
@@ -410,6 +555,9 @@ export function buildGunplaLightbox() {
     root.hidden = true;
     imgEl.removeAttribute("src");
     imgEl.alt = "";
+    lensImgEl.removeAttribute("src");
+    hideLens();
+    resetZoom();
     setFlipped(false);
     document.documentElement.classList.remove("gunpla-lightbox-open");
     if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
@@ -440,7 +588,54 @@ export function buildGunplaLightbox() {
   });
   flipBtn.addEventListener("click", () => setFlipped(!flipped));
 
+  for (const btn of zoomBtns) {
+    btn.addEventListener("click", () => {
+      const action = btn.dataset.zoom;
+      if (action === "in") adjustZoom(ZOOM_STEP);
+      else if (action === "out") adjustZoom(-ZOOM_STEP);
+      else if (action === "reset") resetZoom();
+    });
+  }
+
+  canvas.addEventListener("wheel", (e) => {
+    if (root.hidden) return;
+    e.preventDefault();
+    adjustZoom(e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP);
+  }, { passive: false });
+
+  canvas.addEventListener("mousemove", (e) => {
+    updateLens(e.clientX, e.clientY);
+  });
+
+  canvas.addEventListener("mouseleave", hideLens);
+
+  canvas.addEventListener("mousedown", (e) => {
+    if (zoom <= 1 || e.button !== 0) return;
+    isPanning = true;
+    panStartX = e.clientX;
+    panStartY = e.clientY;
+    panOriginX = panX;
+    panOriginY = panY;
+    canvas.classList.add("is-panning");
+    hideLens();
+    e.preventDefault();
+  });
+
+  window.addEventListener("mousemove", (e) => {
+    if (!isPanning) return;
+    panX = panOriginX + (e.clientX - panStartX);
+    panY = panOriginY + (e.clientY - panStartY);
+    applyImageTransform();
+  });
+
+  window.addEventListener("mouseup", () => {
+    if (!isPanning) return;
+    isPanning = false;
+    canvas.classList.remove("is-panning");
+  });
+
   syncModeUi();
+  syncZoomUi();
   applyPreviewBg();
 
   return { root, openLightbox, closeLightbox };
