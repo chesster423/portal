@@ -45,6 +45,7 @@ export function registerPortalApp(angular, hooks) {
       };
 
       vm.selectNav = function selectNav(id) {
+        hooks.playNavSelectSound?.();
         if (vm.activeNav === id) return;
         vm.activeNav = id;
         hooks.onNavChange(id);

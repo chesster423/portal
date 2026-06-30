@@ -8,6 +8,14 @@
   pointer-events: all;
 }
 
+.ps5-boot__audio {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .ps5-boot__backdrop {
   position: absolute;
   inset: -10%;

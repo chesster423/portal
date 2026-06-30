@@ -15,10 +15,13 @@ import {
   uniqueSorted,
 } from "./main-functions.js";
 import { gunplaCoverUrl, kitDetailHref, mountGunplaGallery } from "./gunpla-shared.js";
+import { initUiSounds, playLoginSoundOnce, playNavSelectSound } from "./ui-sounds.js";
 
 const base = import.meta.env.BASE_URL;
 const BOOT_MIN_MS = 1800;
-const bootStartedAt = performance.now();
+const bootStartedAt = window.__portalBootStartedAt ?? performance.now();
+
+initUiSounds(base);
 
 document.documentElement.classList.add("ps5-mode");
 
@@ -32,12 +35,17 @@ function finishBoot() {
   if (bootFinished) return;
   bootFinished = true;
 
+  window.__portalTryBootAudio?.();
+
   const wait = Math.max(0, BOOT_MIN_MS - (performance.now() - bootStartedAt));
   window.setTimeout(() => {
     document.documentElement.classList.remove("is-booting");
     document.documentElement.classList.add("is-ready");
     const bootEl = document.getElementById("ps5-boot");
     if (bootEl) bootEl.setAttribute("aria-hidden", "true");
+    window.__portalTeardownBootAudio?.();
+    window.__portalStopBootAudioRetry?.();
+    playLoginSoundOnce();
   }, wait);
 }
 
@@ -168,11 +176,13 @@ function focusGamesSearch() {
 function startApp(reviews) {
   reviewsCache = reviews;
   renderSidebars(reviews, base);
+  initUiSounds(base);
 
   const hooks = {
     base,
     onNavChange,
     onSearchFocus: focusGamesSearch,
+    playNavSelectSound,
     bindController(vm, $scope) {
       window.portalVm = vm;
       portalScope = $scope;

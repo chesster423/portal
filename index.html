@@ -19,6 +19,13 @@
         opacity: 1;
         visibility: visible;
       }
+      .ps5-boot__audio {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -26,6 +33,82 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="preload" href="ps5_start.mp3" as="audio" />
+    <link rel="preload" href="ps5-login.mp3" as="audio" />
+    <audio
+      id="ps5-boot-audio"
+      class="ps5-boot__audio"
+      src="ps5_start.mp3"
+      preload="auto"
+      autoplay
+      playsinline
+    ></audio>
+    <script>
+      (function () {
+        window.__portalBootStartedAt = performance.now();
+
+        var audio = document.getElementById("ps5-boot-audio");
+        if (!audio) return;
+
+        audio.volume = 0.85;
+
+        function markStarted() {
+          window.__portalBootAudioStarted = true;
+          window.__portalStopBootAudioRetry?.();
+        }
+
+        function tryPlay() {
+          if (window.__portalBootAudioStarted) return;
+          if (!document.documentElement.classList.contains("is-booting")) return;
+          audio.currentTime = 0;
+          var playPromise = audio.play();
+          if (playPromise && playPromise.then) {
+            playPromise.then(markStarted).catch(function () {});
+          }
+        }
+
+        window.__portalTryBootAudio = tryPlay;
+
+        tryPlay();
+        audio.addEventListener("loadeddata", tryPlay);
+        audio.addEventListener("canplay", tryPlay);
+        audio.addEventListener("canplaythrough", tryPlay);
+
+        var bootPlayTimer = window.setInterval(function () {
+          if (
+            window.__portalBootAudioStarted ||
+            !document.documentElement.classList.contains("is-booting")
+          ) {
+            window.clearInterval(bootPlayTimer);
+            return;
+          }
+          tryPlay();
+        }, 120);
+
+        window.__portalStopBootAudioRetry = function () {
+          window.clearInterval(bootPlayTimer);
+        };
+
+        function bindUnlock(target, type) {
+          target.addEventListener(type, tryPlay, true);
+        }
+
+        ["pointerdown", "touchstart", "keydown"].forEach(function (type) {
+          bindUnlock(document.documentElement, type);
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+          var boot = document.getElementById("ps5-boot");
+          if (boot) {
+            bindUnlock(boot, "pointerdown");
+            bindUnlock(boot, "touchstart");
+          }
+          tryPlay();
+        });
+
+        window.addEventListener("load", tryPlay);
+      })();
+    </script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
   </head>
   <body>
