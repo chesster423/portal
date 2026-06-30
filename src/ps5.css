@@ -287,10 +287,15 @@ html.ps5-mode .bg-glow {
 .ps5-nav__thumb-image {
   position: absolute;
   inset: 0;
+  z-index: 1;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   border-radius: inherit;
+}
+
+.ps5-nav__thumb:has(.ps5-nav__thumb-image) .ps5-nav__thumb-slot {
+  display: none;
 }
 
 .ps5-nav__thumb-slot {
@@ -572,4 +577,28 @@ html.ps5-mode .bg-glow {
   .ps5-content {
     top: calc(var(--ps5-nav-top) + var(--ps5-nav-block-height) + 3.5rem);
   }
+}
+
+.ps5-nav__thumb-image[data-nav-image="stats"] {
+  background-image: url("/portal/images/nav/stats.webp");
+}
+
+.ps5-nav__thumb-image[data-nav-image="games"] {
+  background-image: url("/portal/images/nav/games.webp");
+}
+
+.ps5-nav__thumb-image[data-nav-image="gunpla"] {
+  background-image: url("/portal/images/nav/gunpla.webp");
+}
+
+.ps5-nav__thumb-image[data-nav-image="gold"] {
+  background-image: url("/portal/images/nav/gold.webp");
+}
+
+.ps5-nav__thumb-image[data-nav-image="resume"] {
+  background-image: url("/portal/images/nav/resume.webp");
+}
+
+.ps5-nav__thumb-image[data-nav-image="learnings"] {
+  background-image: url("/portal/images/nav/learnings.webp");
 }

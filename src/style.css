@@ -67,11 +67,11 @@ body {
 }
 
 .site-header {
-  position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 100;
   border-bottom: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.92);
+  background: none;
+  position: absolute;
   backdrop-filter: blur(12px);
 }
 
@@ -90,7 +90,7 @@ body {
   align-items: baseline;
   gap: 0.35rem;
   text-decoration: none;
-  color: var(--text);
+  color: #fff;
   font-family: var(--font-display);
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -2771,4 +2771,318 @@ main {
   0% { left: -100%; }
   20% { left: 100%; } /* Move quickly across */
   100% { left: 100%; } /* Pause/Delay before restarting */
+}
+
+/* ========================================
+   PS5-STYLE HUB NAVIGATION
+   ======================================== */
+
+.page-root {
+  width: 100%;
+}
+
+.hub-navigation {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+}
+
+.hub-background {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  z-index: 0;
+  transition: background 0.6s ease-in-out;
+}
+
+.hub-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1400px;
+  padding: 2rem 1.5rem;
+}
+
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem 0;
+}
+
+@media (min-width: 1024px) {
+  .hub-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.hub-item {
+  position: relative;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hub-item:hover,
+.hub-item:focus {
+  transform: scale(1.08);
+  z-index: 10;
+}
+
+.hub-item.active {
+  transform: scale(1.12);
+  z-index: 20;
+}
+
+.hub-item__image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.hub-item:hover .hub-item__image-wrapper,
+.hub-item:focus .hub-item__image-wrapper,
+.hub-item.active .hub-item__image-wrapper {
+  border: 2px solid rgba(200, 165, 91, 0.5);
+  box-shadow: 0 8px 32px rgba(200, 165, 91, 0.3);
+}
+
+.hub-item__placeholder {
+  font-size: 3rem;
+  opacity: 0.8;
+  transition: transform 0.3s ease;
+}
+
+.hub-item:hover .hub-item__placeholder,
+.hub-item:focus .hub-item__placeholder,
+.hub-item.active .hub-item__placeholder {
+  transform: scale(1.2);
+  opacity: 1;
+}
+
+.hub-item__label {
+  margin-top: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  transition: color 0.3s ease;
+}
+
+.hub-item:hover .hub-item__label,
+.hub-item:focus .hub-item__label,
+.hub-item.active .hub-item__label {
+  color: var(--accent);
+}
+
+.hub-item__details {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 1rem;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(200, 165, 91, 0.3);
+  border-radius: 12px;
+  padding: 1rem;
+  min-width: 220px;
+  max-width: 280px;
+  color: #fff;
+  font-size: 0.875rem;
+  z-index: 100;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.hub-item:hover .hub-item__details,
+.hub-item:focus .hub-item__details,
+.hub-item.active .hub-item__details {
+  opacity: 1;
+  visibility: visible;
+}
+
+.hub-item__details[hidden] {
+  display: none;
+}
+
+.hub-item__detail-content {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.hub-item__detail-content li {
+  margin: 0.3rem 0;
+}
+
+.hub-item__detail-content a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.hub-item__detail-content a:hover {
+  color: var(--accent-3);
+}
+
+.hub-item__social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hub-item__social-links a {
+  padding: 0.5rem;
+  border-radius: 6px;
+  background: rgba(200, 165, 91, 0.1);
+  transition: background 0.2s ease;
+}
+
+.hub-item__social-links a:hover {
+  background: rgba(200, 165, 91, 0.2);
+}
+
+/* Page Content Area */
+.page-content {
+  position: relative;
+  width: 100%;
+  background: var(--bg-deep);
+  z-index: 5;
+  padding-top: 0;
+  animation: slideUp 0.5s ease-out;
+}
+
+.page-content[hidden] {
+  display: none;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ========================================
+   RESPONSIVE ADJUSTMENTS FOR HUB
+   ======================================== */
+
+@media (max-width: 768px) {
+  .hub-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .hub-item {
+    transform: scale(1);
+  }
+
+  .hub-item:hover,
+  .hub-item:focus {
+    transform: scale(1.05);
+  }
+
+  .hub-item.active {
+    transform: scale(1.08);
+  }
+
+  .hub-item__image-wrapper {
+    aspect-ratio: 1;
+    border-radius: 12px;
+  }
+
+  .hub-item__placeholder {
+    font-size: 2rem;
+  }
+
+  .hub-item__label {
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+  }
+
+  .hub-item__details {
+    max-width: 200px;
+    padding: 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hub-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .hub-container {
+    padding: 1rem;
+  }
+
+  .hub-item__image-wrapper {
+    border-radius: 8px;
+  }
+
+  .hub-item__placeholder {
+    font-size: 1.5rem;
+  }
+
+  .hub-item__label {
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+  }
+}
+
+/* ========================================
+   BACKGROUND COLOR THEMES FOR EACH HUB ITEM
+   ======================================== */
+
+.hub-background.theme-currently-playing {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.hub-background.theme-stats {
+  background: linear-gradient(135deg, #2a2a1a 0%, #3e3216 50%, #604a0f 100%);
+}
+
+.hub-background.theme-games-list {
+  background: linear-gradient(135deg, #1a2a2a 0%, #163e3e 50%, #0f6060 100%);
+}
+
+.hub-background.theme-top-10 {
+  background: linear-gradient(135deg, #2a1a2a 0%, #3e1632 50%, #60105f 100%);
+}
+
+.hub-background.theme-latest-reviews {
+  background: linear-gradient(135deg, #2a1a1a 0%, #3e1616 50%, #600f0f 100%);
+}
+
+.hub-background.theme-social {
+  background: linear-gradient(135deg, #1a2a2a 0%, #162a3e 50%, #0f3a60 100%);
 }
