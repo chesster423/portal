@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" ng-controller="PortalController as vm">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,229 +11,276 @@
       href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
   </head>
   <body>
-    <div class="bg-grid" aria-hidden="true"></div>
-    <div class="bg-glow" aria-hidden="true"></div>
-
-    <header class="site-header">
-      <div class="site-header__inner">
-        <a class="logo" href="#top" id="top">
-          <span class="logo__mark">▶</span>
-          <span class="logo__text">CHESSTER</span>
-          <span class="logo__tag">REVIEWS</span>
-        </a>
-        <nav class="nav" aria-label="Primary">
-          <a href="#reviews">Reviews</a>
-          <a href="#about">About</a>
-          <details class="nav-dropdown">
-            <summary class="nav-dropdown__summary">Collections</summary>
-            <div class="nav-dropdown__panel" role="group" aria-label="Collections">
-              <a href="gunpla.html">Gunpla</a>
-              <a href="gold.html">Gold</a>
-            </div>
-          </details>
-          <a href="cv.html">CV</a>
-          <a href="dashboard.html">Dashboard</a>
-        </nav>
+    <div class="ps5-shell">
+      <div class="ps5-bg" aria-hidden="true">
+        <div
+          class="ps5-bg__layer"
+          ng-repeat="item in vm.navItems"
+          data-bg="{{ item.id }}"
+          ng-class="{ 'is-active': vm.bgId() === item.id }"
+        >
+          <div class="ps5-bg__image-slot">
+            <div class="ps5-bg__user-image" data-bg-image="{{ item.id }}"></div>
+            <div class="ps5-bg__placeholder">Background — {{ item.label }}</div>
+          </div>
+          <div class="ps5-bg__scrim"></div>
+        </div>
       </div>
-    </header>
 
-    <div class="page-root">
-      <aside class="side-rail side-rail--left" aria-label="Profile and highlights">
-        <div class="side-panel side-panel--identity" style="display: none;">
-          <div class="side-identity">
-            <img
-              class="side-identity__avatar"
-              src="https://placehold.co/88x88/2a3242/c8a55b?text=You"
-              width="88"
-              height="88"
-              alt="Avatar — replace in index.html"
-              loading="lazy"
-              decoding="async"
-            />
-            <h3 class="side-identity__name">Chesster</h3>
-            <p class="side-identity__philosophy">
-              Honest scores, strong opinions, and games worth the save file.
-            </p>
+      <header class="ps5-header">
+        <div class="ps5-header__utils">
+          <button type="button" class="ps5-header__btn" aria-label="Search" ng-click="vm.focusSearch()">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+              />
+            </svg>
+          </button>
+          <div class="ps5-header__avatar" aria-hidden="true">
+            <img src="https://placehold.co/84x84/2a3242/c8a55b?text=CD" alt="" width="42" height="42" />
           </div>
+          <time class="ps5-header__time" datetime="" aria-live="polite">{{ vm.currentTime }}</time>
         </div>
+      </header>
 
-        <div class="side-panel side-panel--playing">
-          <p class="side-playing__label">Currently Playing</p>
-          <div class="side-playing__cover shine-container">
-            <img
-              src="images/games/octopath-traveler.jpg"
-              width="360"
-              height="203"
-              alt="Current game cover — replace in index.html"
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
+      <h1 class="ps5-hero-title">{{ vm.activeItem().heroTitle }}</h1>
 
-        </div>
+      <nav class="ps5-nav" aria-label="Main navigation">
+        <button
+          type="button"
+          class="ps5-nav__item"
+          ng-repeat="item in vm.navItems"
+          ng-class="{ 'is-active': vm.isNavState(item, 'active'), 'is-hovered': vm.isNavState(item, 'hover') && vm.hoverNav === item.id }"
+          ng-click="vm.selectNav(item.id)"
+          ng-mouseenter="vm.onNavEnter(item.id)"
+          ng-mouseleave="vm.onNavLeave()"
+          ng-focus="vm.onNavEnter(item.id)"
+          ng-blur="vm.onNavLeave()"
+          aria-current="{{ vm.activeNav === item.id ? 'page' : false }}"
+        >
+          <span class="ps5-nav__thumb">
+            <span class="ps5-nav__thumb-image" data-nav-image="{{ item.id }}"></span>
+            <span class="ps5-nav__thumb-slot">{{ item.label }}</span>
+          </span>
+          <span class="ps5-nav__label">{{ item.label }}</span>
+        </button>
+      </nav>
 
-        <div class="side-panel side-panel--stats" aria-label="Collection stats">
-          <h3 class="side-panel__title">Stats</h3>
-          <div class="side-stats">
-            <div class="side-stats__block">
-              <h4 class="side-stats__heading">Games owned</h4>
-              <div class="side-stats__split">
-                <div class="side-stats__split-item">
-                  <span class="side-stats__meta">Physical</span>
-                  <span class="side-stats__num">80</span>
+      <div class="ps5-content">
+        <section
+          class="ps5-panel ps5-panel--stats"
+          data-panel="stats"
+          ng-class="{ 'is-visible': vm.activeNav === 'stats' }"
+          aria-label="Stats dashboard"
+        >
+          <div class="ps5-stats-grid">
+            <div class="ps5-widget ps5-widget--wide">
+              <h3 class="ps5-widget__title">Currently Playing</h3>
+              <div class="side-playing__cover shine-container">
+                <img
+                  src="images/games/octopath-traveler.jpg"
+                  width="360"
+                  height="203"
+                  alt="Current game cover"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+            </div>
+
+            <div class="ps5-widget">
+              <h3 class="ps5-widget__title">Games Owned</h3>
+              <div class="side-stats">
+                <div class="side-stats__block">
+                  <div class="side-stats__split">
+                    <div class="side-stats__split-item">
+                      <span class="side-stats__meta">Physical</span>
+                      <span class="side-stats__num">80</span>
+                    </div>
+                    <div class="side-stats__split-item">
+                      <span class="side-stats__meta">Digital</span>
+                      <span class="side-stats__num">21</span>
+                    </div>
+                  </div>
                 </div>
-                <div class="side-stats__split-item">
-                  <span class="side-stats__meta">Digital</span>
-                  <span class="side-stats__num">21</span>
+                <div class="side-stats__row">
+                  <span class="side-stats__label">Games finished</span>
+                  <span class="side-stats__num">30</span>
+                </div>
+                <div class="side-stats__row">
+                  <span class="side-stats__label">Top genre</span>
+                  <span class="side-stats__value">JRPG</span>
+                </div>
+                <div class="side-stats__row">
+                  <span class="side-stats__label">Most played platform</span>
+                  <span class="side-stats__value">PS5</span>
+                </div>
+                <div class="side-stats__block side-stats__block--stack">
+                  <span class="side-stats__label">Preferred combat</span>
+                  <div class="side-stats__chips" role="list">
+                    <span class="side-stats__chip" role="listitem">Turn-based</span>
+                    <span class="side-stats__chip" role="listitem">Real-time</span>
+                    <span class="side-stats__chip" role="listitem">Tactical</span>
+                  </div>
+                </div>
+                <div class="side-stats__row">
+                  <span class="side-stats__label">Story vs gameplay</span>
+                  <span class="side-stats__value">Gameplay</span>
+                </div>
+                <div class="side-stats__row">
+                  <span class="side-stats__label">100% trophy games</span>
+                  <span class="side-stats__num side-stats__num--muted">xx</span>
                 </div>
               </div>
             </div>
-            <div class="side-stats__row">
-              <span class="side-stats__label">Games finished</span>
-              <span class="side-stats__num">30</span>
+
+            <div class="ps5-widget">
+              <h3 class="ps5-widget__title">Top 10 Games</h3>
+              <ol class="side-list side-list--ranked" id="side-top-10"></ol>
             </div>
-            <div class="side-stats__row">
-              <span class="side-stats__label">Top genre</span>
-              <span class="side-stats__value">JRPG</span>
+
+            <div class="ps5-widget">
+              <h3 class="ps5-widget__title">5 Latest Reviews</h3>
+              <ul class="side-list" id="side-latest-5"></ul>
             </div>
-            <div class="side-stats__row">
-              <span class="side-stats__label">Most played platform</span>
-              <span class="side-stats__value">PS5</span>
+
+            <div class="ps5-widget">
+              <h3 class="ps5-widget__title">Social</h3>
+              <nav class="side-social" aria-label="Social media">
+                <a
+                  class="side-social__link"
+                  href="https://www.youtube.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  >YouTube</a
+                >
+                <a class="side-social__link" href="https://bsky.app/" target="_blank" rel="noopener noreferrer"
+                  >Bluesky</a
+                >
+                <a class="side-social__link" href="https://github.com/" target="_blank" rel="noopener noreferrer"
+                  >GitHub</a
+                >
+              </nav>
             </div>
-            <div class="side-stats__block side-stats__block--stack">
-              <span class="side-stats__label">Preferred combat</span>
-              <div class="side-stats__chips" role="list">
-                <span class="side-stats__chip" role="listitem">Turn-based</span>
-                <span class="side-stats__chip" role="listitem">Real-time</span>
-                <span class="side-stats__chip" role="listitem">Tactical</span>
+          </div>
+        </section>
+
+        <section
+          class="ps5-panel ps5-panel--games"
+          data-panel="games"
+          ng-class="{ 'is-visible': vm.activeNav === 'games' }"
+          aria-label="Game reviews"
+        >
+          <section class="filters" id="filters-section" aria-label="Filter reviews">
+            <div class="filters__bar">
+              <div class="filters__row filters__row--search">
+                <label class="filters__label" for="filter-search">Search</label>
+                <input
+                  type="search"
+                  id="filter-search"
+                  class="filters__search"
+                  placeholder="Game name…"
+                  autocomplete="off"
+                  spellcheck="false"
+                />
+              </div>
+              <button
+                type="button"
+                class="filters__toggle"
+                id="filters-toggle"
+                aria-expanded="false"
+                aria-controls="filters-extra"
+              >
+                <span class="filters__toggle-text">More filters</span>
+                <span class="filters__toggle-chevron" aria-hidden="true">▾</span>
+              </button>
+            </div>
+            <div id="filters-extra" class="filters__extra" hidden>
+              <div class="filters__row">
+                <span class="filters__label">Sort by</span>
+                <div class="chip-group" id="filter-sort-by"></div>
+              </div>
+              <div class="filters__row">
+                <span class="filters__label">Order</span>
+                <div class="chip-group" id="filter-sort-dir"></div>
+              </div>
+              <div class="filters__row">
+                <span class="filters__label">Platform</span>
+                <div class="chip-group" id="filter-platform"></div>
+              </div>
+              <div class="filters__row">
+                <span class="filters__label">Genre</span>
+                <div class="chip-group" id="filter-genre"></div>
               </div>
             </div>
-            <div class="side-stats__row">
-              <span class="side-stats__label">Story vs gameplay</span>
-              <span class="side-stats__value">Gameplay</span>
-            </div>
-            <div class="side-stats__row">
-              <span class="side-stats__label">100% trophy games</span>
-              <span class="side-stats__num side-stats__num--muted">xx</span>
-            </div>
-          </div>
-        </div>
-      </aside>
+          </section>
 
-      <div class="page-main-column">
-    <main>
-      <section class="hero">
-        <div class="hero__banner" aria-label="Site introduction">
-          <div class="hero__banner-inner">
-            <p class="hero__eyebrow">Personal gaming journal</p>
-            <h1 class="hero__title">Play. Score. <span class="hero__accent">Opine.</span></h1>
-            <p class="hero__lead">
-              Honest takes on what I am playing — no ads, no algorithm, just a static site you can host
-              anywhere.
+          <section id="reviews" class="reviews">
+            <div class="section-head">
+              <h2>Latest reviews</h2>
+              <p class="section-head__hint" id="review-count"></p>
+            </div>
+            <div class="review-grid" id="review-grid"></div>
+            <div class="review-load-more-wrap" id="review-load-more-wrap" hidden>
+              <button type="button" class="review-load-more" id="review-load-more" aria-controls="review-grid">
+                Load more
+              </button>
+            </div>
+            <p class="empty-state" id="empty-state" hidden>No matches — try another filter.</p>
+          </section>
+        </section>
+
+        <section
+          class="ps5-panel ps5-panel--gunpla"
+          data-panel="gunpla"
+          ng-class="{ 'is-visible': vm.activeNav === 'gunpla' }"
+          aria-label="Gunpla collection"
+        >
+          <div class="static-page static-page--gunpla">
+            <p class="static-page__lead">
+              Builds with written reviews. Select a kit to read the review and browse photos.
             </p>
-            <div class="hero__stats" id="hero-stats" hidden></div>
+            <div
+              class="gunpla-gallery"
+              id="gunpla-gallery"
+              role="region"
+              aria-label="Gunpla collection gallery"
+            ></div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="filters" id="filters-section" aria-label="Filter reviews">
-        <div class="filters__bar">
-          <div class="filters__row filters__row--search">
-            <label class="filters__label" for="filter-search">Search</label>
-            <input
-              type="search"
-              id="filter-search"
-              class="filters__search"
-              placeholder="Game name…"
-              autocomplete="off"
-              spellcheck="false"
-            />
-          </div>
-          <button
-            type="button"
-            class="filters__toggle"
-            id="filters-toggle"
-            aria-expanded="false"
-            aria-controls="filters-extra"
-          >
-            <span class="filters__toggle-text">More filters</span>
-            <span class="filters__toggle-chevron" aria-hidden="true">▾</span>
-          </button>
-        </div>
-        <div id="filters-extra" class="filters__extra" hidden>
-          <div class="filters__row">
-            <span class="filters__label">Sort by</span>
-            <div class="chip-group" id="filter-sort-by"></div>
-          </div>
-          <div class="filters__row">
-            <span class="filters__label">Order</span>
-            <div class="chip-group" id="filter-sort-dir"></div>
-          </div>
-          <div class="filters__row">
-            <span class="filters__label">Platform</span>
-            <div class="chip-group" id="filter-platform"></div>
-          </div>
-          <div class="filters__row">
-            <span class="filters__label">Genre</span>
-            <div class="chip-group" id="filter-genre"></div>
-          </div>
-        </div>
-      </section>
+        <section
+          class="ps5-panel ps5-panel--gold"
+          data-panel="gold"
+          ng-class="{ 'is-visible': vm.activeNav === 'gold' }"
+          aria-label="Gold collection"
+        >
+          <p class="ps5-wip">Gold collection — work in progress. Content coming soon.</p>
+        </section>
 
-      <section id="reviews" class="reviews">
-        <div class="section-head">
-          <h2>Latest reviews</h2>
-          <p class="section-head__hint" id="review-count"></p>
-        </div>
-        <div class="review-grid" id="review-grid"></div>
-        <div class="review-load-more-wrap" id="review-load-more-wrap" hidden>
-          <button type="button" class="review-load-more" id="review-load-more" aria-controls="review-grid">
-            Load more
-          </button>
-        </div>
-        <p class="empty-state" id="empty-state" hidden>No matches — try another filter.</p>
-      </section>
+        <section
+          class="ps5-panel ps5-panel--resume"
+          data-panel="resume"
+          ng-class="{ 'is-visible': vm.activeNav === 'resume' }"
+          aria-label="Resume"
+        >
+          <div ng-include="vm.base + 'partials/resume.html'"></div>
+        </section>
 
-      <section id="about" class="about">
-        <div class="about__panel">
-          <h2>About this site</h2>
-          <p>
-            Reviews load from a shared Google Sheet (CSV export). Optional dashboard edits in your browser
-            override the sheet until you clear them. Card posters use <code>public/images/{id}.jpg</code> when
-            present. Built for GitHub Pages — no server.
+        <section
+          class="ps5-panel ps5-panel--learnings"
+          data-panel="learnings"
+          ng-class="{ 'is-visible': vm.activeNav === 'learnings' }"
+          aria-label="Life learnings"
+        >
+          <p class="ps5-wip">
+            My life learnings — work in progress. Stories, reflections, and lessons learned along the way.
           </p>
-          <p class="about__signoff">— Chesster</p>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <p>© <span id="year"></span> Chesster · Gaming reviews</p>
-    </footer>
+        </section>
       </div>
-
-      <aside class="side-rail side-rail--right" aria-label="Rankings and links">
-        <div class="side-panel">
-          <h3 class="side-panel__title">Top 10 games</h3>
-          <ol class="side-list side-list--ranked" id="side-top-10"></ol>
-        </div>
-        <div class="side-panel">
-          <h3 class="side-panel__title">5 latest reviews</h3>
-          <ul class="side-list" id="side-latest-5"></ul>
-        </div>
-        <div class="side-panel">
-          <h3 class="side-panel__title">Social</h3>
-          <nav class="side-social" aria-label="Social media">
-            <a class="side-social__link" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer"
-              >YouTube</a
-            >
-            <a class="side-social__link" href="https://bsky.app/" target="_blank" rel="noopener noreferrer">Bluesky</a>
-            <a class="side-social__link" href="https://github.com/" target="_blank" rel="noopener noreferrer">GitHub</a>
-          </nav>
-        </div>
-      </aside>
     </div>
 
     <script type="module" src="/src/main.js"></script>

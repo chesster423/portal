@@ -1,10 +1,11 @@
 import "./style.css";
+import manifest from "virtual:gunpla-manifest";
+import { bootstrapPortal } from "./portal-app.js";
 import {
   REVIEW_PAGE_SIZE,
-  avgScore,
   filterReviews,
   goToReviewPage,
-  init,
+  initFiltersExpand,
   loadReviews,
   renderChips,
   renderFixedChips,
@@ -13,95 +14,165 @@ import {
   sortReviews,
   uniqueSorted,
 } from "./main-functions.js";
+import { gunplaCoverUrl, kitDetailHref, mountGunplaGallery } from "./gunpla-shared.js";
 
 const base = import.meta.env.BASE_URL;
 
-init(base);
+document.documentElement.classList.add("ps5-mode");
 
-loadReviews()
-  .then((reviews) => {
-    const state = {
-      platform: null,
-      genre: null,
-      search: "",
-      sortBy: "title",
-      sortDir: "asc",
-    };
-    const searchEl = document.getElementById("filter-search");
-    const sortByEl = document.getElementById("filter-sort-by");
-    const sortDirEl = document.getElementById("filter-sort-dir");
-    const platformEl = document.getElementById("filter-platform");
-    const genreEl = document.getElementById("filter-genre");
-    const grid = document.getElementById("review-grid");
-    const empty = document.getElementById("empty-state");
-    const countHint = document.getElementById("review-count");
-    const heroStats = document.getElementById("hero-stats");
-    const loadMoreWrap = document.getElementById("review-load-more-wrap");
-    const loadMoreBtn = document.getElementById("review-load-more");
-    let reviewVisibleCount = REVIEW_PAGE_SIZE;
+let reviewsCache = [];
+let gamesReady = false;
+let gunplaReady = false;
+let portalScope = null;
 
-    const sortByOptions = [
-      { value: "title", label: "Name" },
-      { value: "score", label: "Score" },
-    ];
-    const sortDirOptions = [
-      { value: "asc", label: "Ascending" },
-      { value: "desc", label: "Descending" },
-    ];
+function setActiveNav(id) {
+  if (!window.portalVm) return;
+  const apply = () => {
+    window.portalVm.activeNav = id;
+    window.portalVm.hoverNav = null;
+  };
+  if (portalScope) portalScope.$apply(apply);
+  else apply();
+}
 
-    function refreshFilters() {
-      renderFixedChips(sortByEl, sortByOptions, state.sortBy, (v) => {
-        state.sortBy = v;
-        refresh();
-      });
-      renderFixedChips(sortDirEl, sortDirOptions, state.sortDir, (v) => {
-        state.sortDir = v;
-        refresh();
-      });
-      renderChips(platformEl, uniqueSorted(reviews, "platform"), "platform", state, refresh);
-      renderChips(genreEl, uniqueSorted(reviews, "genre"), "genre", state, refresh);
+function initGamesPanel(reviews) {
+  if (gamesReady) return;
+  gamesReady = true;
+
+  const state = {
+    platform: null,
+    genre: null,
+    search: "",
+    sortBy: "title",
+    sortDir: "asc",
+  };
+  const searchEl = document.getElementById("filter-search");
+  const sortByEl = document.getElementById("filter-sort-by");
+  const sortDirEl = document.getElementById("filter-sort-dir");
+  const platformEl = document.getElementById("filter-platform");
+  const genreEl = document.getElementById("filter-genre");
+  const grid = document.getElementById("review-grid");
+  const empty = document.getElementById("empty-state");
+  const countHint = document.getElementById("review-count");
+  const loadMoreWrap = document.getElementById("review-load-more-wrap");
+  const loadMoreBtn = document.getElementById("review-load-more");
+  let reviewVisibleCount = REVIEW_PAGE_SIZE;
+
+  const sortByOptions = [
+    { value: "title", label: "Name" },
+    { value: "score", label: "Score" },
+  ];
+  const sortDirOptions = [
+    { value: "asc", label: "Ascending" },
+    { value: "desc", label: "Descending" },
+  ];
+
+  function refreshFilters() {
+    renderFixedChips(sortByEl, sortByOptions, state.sortBy, (v) => {
+      state.sortBy = v;
+      refresh();
+    });
+    renderFixedChips(sortDirEl, sortDirOptions, state.sortDir, (v) => {
+      state.sortDir = v;
+      refresh();
+    });
+    renderChips(platformEl, uniqueSorted(reviews, "platform"), "platform", state, refresh);
+    renderChips(genreEl, uniqueSorted(reviews, "genre"), "genre", state, refresh);
+  }
+
+  function refresh(resetPaging = true) {
+    refreshFilters();
+    const filtered = filterReviews(reviews, state);
+    const visible = sortReviews(filtered, state.sortBy, state.sortDir);
+    if (resetPaging) reviewVisibleCount = REVIEW_PAGE_SIZE;
+    reviewVisibleCount = Math.min(reviewVisibleCount, visible.length);
+    const slice = visible.slice(0, reviewVisibleCount);
+    countHint.textContent = `${visible.length} game${visible.length === 1 ? "" : "s"}`;
+    empty.hidden = visible.length > 0;
+    grid.hidden = visible.length === 0;
+    renderGrid(grid, slice, (id) => goToReviewPage(id, base), base);
+    if (loadMoreWrap && loadMoreBtn) {
+      const hasMore = visible.length > slice.length;
+      loadMoreWrap.hidden = visible.length === 0 || !hasMore;
     }
+  }
 
-    function refresh(resetPaging = true) {
-      refreshFilters();
-      const filtered = filterReviews(reviews, state);
-      const visible = sortReviews(filtered, state.sortBy, state.sortDir);
-      if (resetPaging) reviewVisibleCount = REVIEW_PAGE_SIZE;
-      reviewVisibleCount = Math.min(reviewVisibleCount, visible.length);
-      const slice = visible.slice(0, reviewVisibleCount);
-      countHint.textContent = `${visible.length} game${visible.length === 1 ? "" : "s"}`;
-      empty.hidden = visible.length > 0;
-      grid.hidden = visible.length === 0;
-      renderGrid(grid, slice, (id) => goToReviewPage(id, base), base);
-      if (loadMoreWrap && loadMoreBtn) {
-        const hasMore = visible.length > slice.length;
-        loadMoreWrap.hidden = visible.length === 0 || !hasMore;
-      }
-    }
-
+  if (searchEl) {
     searchEl.value = state.search;
     searchEl.addEventListener("input", () => {
       state.search = searchEl.value;
       refresh();
     });
+  }
 
-    loadMoreBtn?.addEventListener("click", () => {
-      reviewVisibleCount += REVIEW_PAGE_SIZE;
-      refresh(false);
-    });
+  loadMoreBtn?.addEventListener("click", () => {
+    reviewVisibleCount += REVIEW_PAGE_SIZE;
+    refresh(false);
+  });
 
-    heroStats.hidden = false;
-    heroStats.innerHTML = `
-      <span class="stat-pill">${reviews.length} titles</span>
-      <span class="stat-pill">Avg ${avgScore(reviews)}</span>
-    `;
+  initFiltersExpand();
+  refresh();
+}
 
-    renderSidebars(reviews, base);
-    refresh();
-  })
+function initGunplaPanel() {
+  if (gunplaReady) return;
+  gunplaReady = true;
+
+  const mount = document.getElementById("gunpla-gallery");
+  if (!mount) return;
+
+  const published = manifest.filter((kit) => kit.hasReview);
+  const items = published.map((kit) => ({
+    alt: kit.title,
+    src: gunplaCoverUrl(kit.cover),
+    href: kitDetailHref(kit.slug),
+  }));
+
+  mountGunplaGallery(mount, items, {
+    onItemClick: (item) => item.href,
+  });
+}
+
+function onNavChange(id) {
+  if (id === "games") initGamesPanel(reviewsCache);
+  if (id === "gunpla") initGunplaPanel();
+}
+
+function focusGamesSearch() {
+  const searchEl = document.getElementById("filter-search");
+  if (!searchEl) return;
+  setActiveNav("games");
+  onNavChange("games");
+  setTimeout(() => {
+    searchEl.focus();
+    searchEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, 50);
+}
+
+function startApp(reviews) {
+  reviewsCache = reviews;
+  renderSidebars(reviews, base);
+
+  const hooks = {
+    base,
+    onNavChange,
+    onSearchFocus: focusGamesSearch,
+    bindController(vm, $scope) {
+      window.portalVm = vm;
+      portalScope = $scope;
+    },
+  };
+
+  bootstrapPortal(window.angular, hooks);
+}
+
+loadReviews()
+  .then((reviews) => startApp(reviews))
   .catch(() => {
-    renderSidebars([], base);
+    startApp([]);
     const grid = document.getElementById("review-grid");
-    grid.innerHTML =
-      '<p class="empty-state">Could not load reviews from the Google Sheet. Check the sheet is shared (anyone with the link can view) and column headers match <code>id, title, platform, genre, score, date</code> (or <code>data</code>), <code>summary, body</code>.</p>';
+    if (grid) {
+      grid.innerHTML =
+        '<p class="empty-state">Could not load reviews from the Google Sheet. Check the sheet is shared (anyone with the link can view) and column headers match <code>id, title, platform, genre, score, date</code> (or <code>data</code>), <code>summary, body</code>.</p>';
+    }
   });
