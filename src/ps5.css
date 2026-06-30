@@ -7,8 +7,8 @@
   --ps5-glass-border: rgba(255, 255, 255, 0.14);
   --ps5-gutter: clamp(1.5rem, 4vw, 3rem);
   --ps5-nav-top: clamp(4.25rem, 10vh, 5.75rem);
-  --ps5-nav-size: 5.25rem;
-  --ps5-nav-size-active: 6.75rem;
+  --ps5-nav-size: 7.25rem;
+  --ps5-nav-size-active: 8.75rem;
   --ps5-nav-pad-top: calc(var(--ps5-nav-size-active) - var(--ps5-nav-size) + 0.5rem);
   --ps5-nav-pad-bottom: 2.25rem;
   --ps5-nav-block-height: calc(
@@ -234,6 +234,7 @@ html.ps5-mode .bg-glow {
   overflow-y: visible;
   scrollbar-width: none;
   justify-content: flex-start;
+  padding-top: 0px !important;
 }
 
 .ps5-nav::-webkit-scrollbar {
