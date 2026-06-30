@@ -603,3 +603,23 @@ html.ps5-mode .bg-glow {
 .ps5-nav__thumb-image[data-nav-image="learnings"] {
   background-image: url("/portal/images/nav/learnings.webp");
 }
+
+
+.ps5-bg__user-image[data-bg-image="stats"] {
+  background-image: url("/portal/images/bg/stats.webp");
+}
+.ps5-bg__user-image[data-bg-image="games"] {
+  background-image: url("/portal/images/bg/games.avif");
+}
+.ps5-bg__user-image[data-bg-image="gunpla"] {
+  background-image: url("/portal/images/bg/gunpla.avif");
+}
+.ps5-bg__user-image[data-bg-image="gold"] {
+  background-image: url("/portal/images/bg/gold.jpg");
+}
+.ps5-bg__user-image[data-bg-image="resume"] {
+  background-image: url("/portal/images/bg/resume.jpg");
+}
+.ps5-bg__user-image[data-bg-image="learnings"] {
+  background-image: url("/portal/images/bg/learnings.png");
+}
