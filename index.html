@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="is-booting">
+<html lang="en" class="is-booting is-awaiting-start">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,6 +26,15 @@
         opacity: 0;
         pointer-events: none;
       }
+      html.is-awaiting-start .ps5-boot__start {
+        opacity: 1;
+        visibility: visible;
+      }
+      html:not(.is-awaiting-start) .ps5-boot__start {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -40,79 +49,115 @@
       class="ps5-boot__audio"
       src="ps5_start.mp3"
       preload="auto"
-      autoplay
+      playsinline
+    ></audio>
+    <audio
+      id="ps5-login-audio"
+      class="ps5-boot__audio"
+      src="ps5-login.mp3"
+      preload="auto"
       playsinline
     ></audio>
     <script>
       (function () {
-        window.__portalBootStartedAt = performance.now();
+        var started = false;
+        var bootAudio = document.getElementById("ps5-boot-audio");
+        var loginAudio = document.getElementById("ps5-login-audio");
+        var bindings = [];
 
-        var audio = document.getElementById("ps5-boot-audio");
-        if (!audio) return;
-
-        audio.volume = 0.85;
-
-        function markStarted() {
-          window.__portalBootAudioStarted = true;
-          window.__portalStopBootAudioRetry?.();
+        function showPrompt() {
+          document.documentElement.classList.add("is-awaiting-start");
+          var startEl = document.getElementById("ps5-boot-start");
+          if (startEl) startEl.hidden = false;
         }
 
-        function tryPlay() {
-          if (window.__portalBootAudioStarted) return;
-          if (!document.documentElement.classList.contains("is-booting")) return;
+        function hidePrompt() {
+          document.documentElement.classList.remove("is-awaiting-start");
+          var startEl = document.getElementById("ps5-boot-start");
+          if (startEl) startEl.hidden = true;
+        }
+
+        function playClip(audio) {
+          if (!audio) return Promise.resolve();
+          audio.volume = 0.85;
           audio.currentTime = 0;
-          var playPromise = audio.play();
-          if (playPromise && playPromise.then) {
-            playPromise.then(markStarted).catch(function () {});
-          }
+          return audio.play().catch(function () {});
         }
 
-        window.__portalTryBootAudio = tryPlay;
-
-        tryPlay();
-        audio.addEventListener("loadeddata", tryPlay);
-        audio.addEventListener("canplay", tryPlay);
-        audio.addEventListener("canplaythrough", tryPlay);
-
-        var bootPlayTimer = window.setInterval(function () {
-          if (
-            window.__portalBootAudioStarted ||
-            !document.documentElement.classList.contains("is-booting")
-          ) {
-            window.clearInterval(bootPlayTimer);
+        function playBootThenLogin() {
+          if (!bootAudio) {
+            playClip(loginAudio).then(function () {
+              window.__portalLoginSoundPlayed = true;
+            });
             return;
           }
-          tryPlay();
-        }, 120);
 
-        window.__portalStopBootAudioRetry = function () {
-          window.clearInterval(bootPlayTimer);
-        };
+          bootAudio.volume = 0.85;
+          bootAudio.currentTime = 0;
 
-        function bindUnlock(target, type) {
-          target.addEventListener(type, tryPlay, true);
+          function playLogin() {
+            playClip(loginAudio).then(function () {
+              window.__portalLoginSoundPlayed = true;
+            });
+          }
+
+          bootAudio.addEventListener(
+            "ended",
+            function () {
+              playLogin();
+            },
+            { once: true }
+          );
+
+          bootAudio.play().catch(function () {
+            playLogin();
+          });
         }
 
-        ["pointerdown", "touchstart", "keydown"].forEach(function (type) {
-          bindUnlock(document.documentElement, type);
-        });
+        function teardownListeners() {
+          bindings.forEach(function (b) {
+            b.target.removeEventListener(b.type, b.handler, true);
+          });
+          bindings.length = 0;
+        }
+
+        function bind(target, type) {
+          var handler = function (e) {
+            if (type === "keydown" && e.repeat) return;
+            startBoot();
+          };
+          target.addEventListener(type, handler, true);
+          bindings.push({ target: target, type: type, handler: handler });
+        }
+
+        function startBoot() {
+          if (started) return;
+          started = true;
+          hidePrompt();
+          window.__portalBootStartedAt = performance.now();
+          window.__portalAudioUnlocked = true;
+
+          playBootThenLogin();
+
+          window.dispatchEvent(new CustomEvent("portal-boot-started"));
+          teardownListeners();
+        }
+
+        window.__portalTryBootAudio = startBoot;
 
         document.addEventListener("DOMContentLoaded", function () {
-          var boot = document.getElementById("ps5-boot");
-          if (boot) {
-            bindUnlock(boot, "pointerdown");
-            bindUnlock(boot, "touchstart");
-          }
-          tryPlay();
-        });
+          var startEl = document.getElementById("ps5-boot-start");
 
-        window.addEventListener("load", tryPlay);
+          showPrompt();
+          if (startEl) bind(startEl, "click");
+          bind(document.documentElement, "keydown");
+        });
       })();
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
   </head>
   <body>
-    <div class="ps5-boot" id="ps5-boot" aria-hidden="true" aria-live="polite">
+    <div class="ps5-boot" id="ps5-boot" aria-hidden="false" aria-live="polite">
       <div class="ps5-boot__backdrop"></div>
       <div class="ps5-boot__dust" aria-hidden="true"></div>
       <div class="ps5-boot__dust ps5-boot__dust--slow" aria-hidden="true"></div>
@@ -121,6 +166,10 @@
         <span></span><span></span><span></span><span></span><span></span><span></span>
       </div>
       <div class="ps5-boot__sweep" aria-hidden="true"></div>
+      <button class="ps5-boot__start" id="ps5-boot-start" type="button" aria-label="Press any button to start">
+        <span class="ps5-boot__start-icon" aria-hidden="true">✕</span>
+        <span class="ps5-boot__start-text">Press any button to start</span>
+      </button>
     </div>
 
     <div class="ps5-shell" ng-controller="PortalController as vm" ng-cloak>

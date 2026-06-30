@@ -202,6 +202,77 @@
   animation: ps5-boot-sweep 2.2s ease-in-out infinite;
 }
 
+.ps5-boot__start {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.25rem;
+  padding: 0 1.5rem 12vh;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  transition:
+    opacity 0.35s ease,
+    visibility 0.35s ease;
+}
+
+.ps5-boot__start:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: -0.5rem;
+}
+
+.ps5-boot__start-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  font-family: "Orbitron", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.95);
+  animation: ps5-boot-start-pulse 1.8s ease-in-out infinite;
+}
+
+.ps5-boot__start-text {
+  font-family: "Rajdhani", sans-serif;
+  font-size: clamp(0.95rem, 2.4vw, 1.1rem);
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+  animation: ps5-boot-start-pulse 1.8s ease-in-out infinite;
+}
+
+html.is-awaiting-start .ps5-boot__start {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+html:not(.is-awaiting-start) .ps5-boot__start {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes ps5-boot-start-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
 html.is-ready .ps5-boot {
   opacity: 0;
   visibility: hidden;

@@ -53,10 +53,15 @@ export function initUiSounds(base) {
     bootAudio.volume = 0.85;
   }
 
+  loginAudio = document.getElementById("ps5-login-audio") || loginAudio;
   if (!loginAudio) {
     loginAudio = new Audio(assetUrl(root, "ps5-login.mp3"));
     loginAudio.preload = "auto";
     loginAudio.volume = 0.85;
+  }
+
+  if (window.__portalLoginSoundPlayed) {
+    loginPlayed = true;
   }
 
   if (!navSelectAudio) {
