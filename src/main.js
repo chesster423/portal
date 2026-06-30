@@ -15,7 +15,7 @@ import {
   uniqueSorted,
 } from "./main-functions.js";
 import { gunplaCoverUrl, kitDetailHref, mountGunplaGallery } from "./gunpla-shared.js";
-import { initUiSounds, playNavSelectSound } from "./ui-sounds.js";
+import { initUiSounds, playNavSelectSound, startThemeMusic } from "./ui-sounds.js";
 
 const base = import.meta.env.BASE_URL;
 const BOOT_MIN_MS = 1800;
@@ -41,6 +41,13 @@ function finishBoot() {
     document.documentElement.classList.add("is-ready");
     const bootEl = document.getElementById("ps5-boot");
     if (bootEl) bootEl.setAttribute("aria-hidden", "true");
+
+    const loginEl = document.getElementById("ps5-login-audio");
+    if (loginEl && !loginEl.paused && !loginEl.ended) {
+      loginEl.addEventListener("ended", () => startThemeMusic(), { once: true });
+    } else {
+      startThemeMusic();
+    }
   };
 
   const scheduleCompleteBoot = () => {

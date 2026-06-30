@@ -6,8 +6,10 @@ function assetUrl(base, file) {
 let bootAudio = null;
 let loginAudio = null;
 let navSelectAudio = null;
+let themeAudio = null;
 let loginPlayed = false;
 let loginUnlockBound = false;
+let themeStarted = false;
 
 function playClip(audio) {
   if (!audio) return Promise.reject(new Error("no audio"));
@@ -69,6 +71,13 @@ export function initUiSounds(base) {
     navSelectAudio.preload = "auto";
     navSelectAudio.volume = 0.75;
   }
+
+  if (!themeAudio) {
+    themeAudio = new Audio(assetUrl(root, "ps5-theme.mp3"));
+    themeAudio.preload = "auto";
+    themeAudio.loop = true;
+    themeAudio.volume = 0.45;
+  }
 }
 
 export function playBootSound() {
@@ -89,4 +98,15 @@ export function playLoginSoundOnce() {
 
 export function playNavSelectSound() {
   return playClip(navSelectAudio).catch(() => {});
+}
+
+export function startThemeMusic() {
+  if (themeStarted || !themeAudio || !window.__portalAudioUnlocked) {
+    return Promise.resolve();
+  }
+
+  themeStarted = true;
+  return themeAudio.play().catch(() => {
+    themeStarted = false;
+  });
 }
