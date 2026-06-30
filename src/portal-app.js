@@ -75,5 +75,9 @@ export function registerPortalApp(angular, hooks) {
 
 export function bootstrapPortal(angular, hooks) {
   registerPortalApp(angular, hooks);
-  angular.bootstrap(document.documentElement, ["portalApp"], { strictDi: true });
+  const root = document.querySelector(".ps5-shell");
+  if (!root) {
+    throw new Error("Missing .ps5-shell root element for Angular bootstrap.");
+  }
+  angular.bootstrap(root, ["portalApp"], { strictDi: true });
 }

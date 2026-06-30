@@ -17,6 +17,8 @@ import {
 import { gunplaCoverUrl, kitDetailHref, mountGunplaGallery } from "./gunpla-shared.js";
 
 const base = import.meta.env.BASE_URL;
+const BOOT_MIN_MS = 1800;
+const bootStartedAt = performance.now();
 
 document.documentElement.classList.add("ps5-mode");
 
@@ -24,6 +26,20 @@ let reviewsCache = [];
 let gamesReady = false;
 let gunplaReady = false;
 let portalScope = null;
+let bootFinished = false;
+
+function finishBoot() {
+  if (bootFinished) return;
+  bootFinished = true;
+
+  const wait = Math.max(0, BOOT_MIN_MS - (performance.now() - bootStartedAt));
+  window.setTimeout(() => {
+    document.documentElement.classList.remove("is-booting");
+    document.documentElement.classList.add("is-ready");
+    const bootEl = document.getElementById("ps5-boot");
+    if (bootEl) bootEl.setAttribute("aria-hidden", "true");
+  }, wait);
+}
 
 function setActiveNav(id) {
   if (!window.portalVm) return;
@@ -164,6 +180,7 @@ function startApp(reviews) {
   };
 
   bootstrapPortal(window.angular, hooks);
+  finishBoot();
 }
 
 loadReviews()

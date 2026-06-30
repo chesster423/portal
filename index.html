@@ -1,10 +1,25 @@
 <!DOCTYPE html>
-<html lang="en" ng-controller="PortalController as vm">
+<html lang="en" class="is-booting">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Personal gaming reviews — scores, thoughts, and picks." />
     <title>Chesster — Gaming Reviews</title>
+    <style>
+      [ng-cloak],
+      [ng\:cloak],
+      .ng-cloak {
+        display: none !important;
+      }
+      html.is-booting .ps5-shell {
+        opacity: 0;
+        visibility: hidden;
+      }
+      .ps5-boot {
+        opacity: 1;
+        visibility: visible;
+      }
+    </style>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,7 +29,18 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
   </head>
   <body>
-    <div class="ps5-shell">
+    <div class="ps5-boot" id="ps5-boot" aria-hidden="true" aria-live="polite">
+      <div class="ps5-boot__backdrop"></div>
+      <div class="ps5-boot__dust" aria-hidden="true"></div>
+      <div class="ps5-boot__dust ps5-boot__dust--slow" aria-hidden="true"></div>
+      <div class="ps5-boot__orbs" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <div class="ps5-boot__sweep" aria-hidden="true"></div>
+    </div>
+
+    <div class="ps5-shell" ng-controller="PortalController as vm" ng-cloak>
       <div class="ps5-bg" aria-hidden="true">
         <div
           class="ps5-bg__layer"
