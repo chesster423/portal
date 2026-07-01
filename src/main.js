@@ -1,6 +1,6 @@
 import "./style.css";
 import manifest from "virtual:gunpla-manifest";
-import { bootstrapPortal } from "./portal-app.js";
+import { bootstrapPortal, isValidNavId, normalizeNavHash, parseNavHash } from "./portal-app.js";
 import { initGunplaModal } from "./gunpla-modal.js";
 import { initReviewPanel } from "./review-panel.js";
 import {
@@ -75,6 +75,44 @@ function setActiveNav(id) {
   };
   if (portalScope) portalScope.$apply(apply);
   else apply();
+}
+
+function setNavHash(id) {
+  const target = `#${id}`;
+  if (window.location.hash === target) return;
+  const url = `${window.location.pathname}${window.location.search}${target}`;
+  history.pushState({ portalNav: id }, "", url);
+}
+
+function navigateToNav(id, { updateHash = true, playSound = false } = {}) {
+  if (!isValidNavId(id)) return;
+
+  const current = window.portalVm?.activeNav;
+  if (current === id) {
+    if (updateHash) setNavHash(id);
+    return;
+  }
+
+  if (playSound) playNavSelectSound();
+  setActiveNav(id);
+  onNavChange(id);
+  if (updateHash) setNavHash(id);
+}
+
+function syncNavFromHash() {
+  const id = parseNavHash();
+  if (id) {
+    navigateToNav(id, { updateHash: false });
+    return;
+  }
+  if (window.portalVm?.activeNav !== "stats") {
+    navigateToNav("stats", { updateHash: false });
+  }
+}
+
+function initNavHashRouting() {
+  window.addEventListener("hashchange", syncNavFromHash);
+  window.addEventListener("popstate", syncNavFromHash);
 }
 
 function initGamesPanel(reviews) {
@@ -183,8 +221,7 @@ function onNavChange(id) {
 function focusGamesSearch() {
   const searchEl = document.getElementById("filter-search");
   if (!searchEl) return;
-  setActiveNav("games");
-  onNavChange("games");
+  navigateToNav("games", { playSound: false });
   setTimeout(() => {
     searchEl.focus();
     searchEl.scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -201,14 +238,23 @@ function startApp(reviews) {
   renderSidebars(reviews, reviewPanel.open);
   initUiSounds(base);
 
+  normalizeNavHash();
+
   const hooks = {
     base,
     onNavChange,
     onSearchFocus: focusGamesSearch,
     playNavSelectSound,
+    navigateToNav(id) {
+      navigateToNav(id, { updateHash: true, playSound: true });
+    },
     bindController(vm, $scope) {
       window.portalVm = vm;
       portalScope = $scope;
+      onNavChange(vm.activeNav);
+      normalizeNavHash();
+      initNavHashRouting();
+      requestAnimationFrame(() => normalizeNavHash());
     },
   };
 

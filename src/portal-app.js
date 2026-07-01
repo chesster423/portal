@@ -7,6 +7,45 @@ const NAV_ITEMS = [
   { id: "learnings", label: "Learnings", heroTitle: "My Life Learnings" },
 ];
 
+const NAV_IDS = new Set(NAV_ITEMS.map((item) => item.id));
+
+export function parseNavHash(location = window.location) {
+  const hash = location.hash.slice(1).toLowerCase();
+  if (!hash) return null;
+
+  for (const id of NAV_IDS) {
+    if (hash === id) return id;
+    if (hash.endsWith(`/${id}`) || hash.endsWith(`#${id}`) || hash.includes(`#${id}`)) {
+      return id;
+    }
+  }
+
+  const match = hash.match(/(?:^|[!/&#])(stats|games|gunpla|gold|resume|learnings)(?:$|[/?#&])/);
+  return match ? match[1] : null;
+}
+
+export function navHashFor(id) {
+  return `#${id}`;
+}
+
+export function normalizeNavHash(location = window.location) {
+  const id = parseNavHash(location);
+  if (!id) return null;
+  const target = navHashFor(id);
+  if (location.hash === target) return id;
+  const url = `${location.pathname}${location.search}${target}`;
+  history.replaceState({ portalNav: id }, "", url);
+  return id;
+}
+
+export function defaultNavId(location = window.location) {
+  return parseNavHash(location) ?? "stats";
+}
+
+export function isValidNavId(id) {
+  return NAV_IDS.has(id);
+}
+
 function formatClock(date) {
   return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
 }
@@ -18,13 +57,20 @@ function activeBgId(activeNav, hoverNav) {
 export function registerPortalApp(angular, hooks) {
   const app = angular.module("portalApp", []);
 
+  app.config([
+    "$locationProvider",
+    function configureLocation($locationProvider) {
+      $locationProvider.hashPrefix("");
+    },
+  ]);
+
   app.controller("PortalController", [
     "$interval",
     "$scope",
     function PortalController($interval, $scope) {
       const vm = this;
       vm.navItems = NAV_ITEMS;
-      vm.activeNav = "stats";
+      vm.activeNav = defaultNavId();
       vm.hoverNav = null;
       vm.currentTime = formatClock(new Date());
       vm.base = hooks.base;
@@ -45,10 +91,7 @@ export function registerPortalApp(angular, hooks) {
       };
 
       vm.selectNav = function selectNav(id) {
-        hooks.playNavSelectSound?.();
-        if (vm.activeNav === id) return;
-        vm.activeNav = id;
-        hooks.onNavChange(id);
+        hooks.navigateToNav?.(id);
       };
 
       vm.onNavEnter = function onNavEnter(id) {
