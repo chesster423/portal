@@ -10,22 +10,15 @@ const NAV_ITEMS = [
 const NAV_IDS = new Set(NAV_ITEMS.map((item) => item.id));
 
 export function parseNavHash(location = window.location) {
-  const hash = location.hash.slice(1).toLowerCase();
+  let hash = location.hash.slice(1).toLowerCase();
   if (!hash) return null;
-
-  for (const id of NAV_IDS) {
-    if (hash === id) return id;
-    if (hash.endsWith(`/${id}`) || hash.endsWith(`#${id}`) || hash.includes(`#${id}`)) {
-      return id;
-    }
-  }
-
-  const match = hash.match(/(?:^|[!/&#])(stats|games|gunpla|gold|resume|learnings)(?:$|[/?#&])/);
-  return match ? match[1] : null;
+  hash = hash.replace(/^!+/, "").replace(/^#+/, "").replace(/^\/+/, "");
+  const id = hash.split(/[/?#&]/)[0];
+  return NAV_IDS.has(id) ? id : null;
 }
 
 export function navHashFor(id) {
-  return `#${id}`;
+  return `#/${id}`;
 }
 
 export function normalizeNavHash(location = window.location) {
@@ -91,7 +84,7 @@ export function registerPortalApp(angular, hooks) {
       };
 
       vm.selectNav = function selectNav(id) {
-        hooks.navigateToNav?.(id);
+        hooks.navigateToSection?.(id);
       };
 
       vm.onNavEnter = function onNavEnter(id) {

@@ -1,6 +1,6 @@
 import "./style.css";
 import manifest from "virtual:gunpla-manifest";
-import { bootstrapPortal, isValidNavId, normalizeNavHash, parseNavHash } from "./portal-app.js";
+import { bootstrapPortal, isValidNavId, navHashFor, normalizeNavHash, parseNavHash } from "./portal-app.js";
 import { initGunplaModal } from "./gunpla-modal.js";
 import { initReviewPanel } from "./review-panel.js";
 import {
@@ -73,12 +73,12 @@ function setActiveNav(id) {
     window.portalVm.activeNav = id;
     window.portalVm.hoverNav = null;
   };
-  if (portalScope) portalScope.$apply(apply);
+  if (portalScope) portalScope.$evalAsync(apply);
   else apply();
 }
 
 function setNavHash(id) {
-  const target = `#${id}`;
+  const target = navHashFor(id);
   if (window.location.hash === target) return;
   const url = `${window.location.pathname}${window.location.search}${target}`;
   history.pushState({ portalNav: id }, "", url);
@@ -245,7 +245,7 @@ function startApp(reviews) {
     onNavChange,
     onSearchFocus: focusGamesSearch,
     playNavSelectSound,
-    navigateToNav(id) {
+    navigateToSection(id) {
       navigateToNav(id, { updateHash: true, playSound: true });
     },
     bindController(vm, $scope) {
