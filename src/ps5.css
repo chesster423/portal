@@ -453,11 +453,16 @@ html.ps5-mode .bg-glow {
 }
 
 .ps5-widget--support {
-  grid-column: 5 / 6;
+  grid-column: 5 / 7;
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  padding: 0.65rem;
+  min-height: 18rem;
 }
 
 .ps5-widget--social {
-  grid-column: 6 / 7;
+  grid-column: 3 / 5;
 }
 
 .ps5-widget__head {
@@ -794,25 +799,34 @@ html.ps5-mode .bg-glow {
 }
 
 /* Support QR */
+.ps5-widget--support .ps5-widget__title {
+  flex-shrink: 0;
+  margin-bottom: 0.45rem;
+}
+
 .ps5-support {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.45rem;
+  align-items: stretch;
+  min-height: 0;
+  gap: 0.35rem;
 }
 
 .ps5-support__qr {
-  width: 5.5rem;
-  height: 5.5rem;
+  flex: 1;
+  width: 100%;
+  min-height: 14rem;
   border-radius: 8px;
   background: #fff;
-  padding: 0.25rem;
+  padding: 0.15rem;
   object-fit: contain;
 }
 
 .ps5-support__hint {
+  flex-shrink: 0;
   margin: 0;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--ps5-muted);
   text-align: center;
 }
