@@ -475,10 +475,16 @@ html.ps5-mode .bg-glow {
 
 /* Games panel overrides */
 .ps5-panel--games .filters {
+  position: sticky;
+  top: 0;
+  z-index: 10;
   margin-bottom: 1rem;
   background: var(--ps5-glass);
   border-color: var(--ps5-glass-border);
   backdrop-filter: blur(14px);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
 }
 
 .ps5-panel--games .filters__label,
