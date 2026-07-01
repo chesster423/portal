@@ -1,4 +1,5 @@
 import { renderReviewDetail, renderReviewError } from "./review-detail.js";
+import { playBackButtonSound, playPopupSound } from "./ui-sounds.js";
 
 const PANEL_TRANSITION_MS = 400;
 
@@ -25,6 +26,7 @@ export function initReviewPanel({ base, getReviews }) {
   function close() {
     if (!isOpen) return;
     isOpen = false;
+    playBackButtonSound();
     root.classList.remove("is-open");
     document.documentElement.classList.remove("review-drawer-open");
     window.clearTimeout(closeTimer);
@@ -54,6 +56,7 @@ export function initReviewPanel({ base, getReviews }) {
     });
 
     isOpen = true;
+    playPopupSound();
     closeBtn?.focus();
   }
 

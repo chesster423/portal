@@ -642,13 +642,27 @@ export function buildGunplaLightbox() {
 }
 
 export function mountGunplaGallery(mount, items, options = {}) {
-  const { onItemClick } = options;
+  const { onItemClick, onKitOpen } = options;
   const frag = document.createDocumentFragment();
   for (const item of items) {
     const figure = document.createElement("figure");
     figure.className = "gunpla-gallery__item";
 
-    if (onItemClick) {
+    if (onKitOpen) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "gunpla-gallery__trigger";
+      btn.setAttribute("aria-label", `View ${item.alt}`);
+      const img = document.createElement("img");
+      img.className = "gunpla-gallery__img";
+      img.src = item.src;
+      img.alt = item.alt;
+      img.loading = "lazy";
+      img.decoding = "async";
+      btn.appendChild(img);
+      btn.addEventListener("click", () => onKitOpen(item));
+      figure.appendChild(btn);
+    } else if (onItemClick) {
       const link = document.createElement("a");
       link.className = "gunpla-gallery__trigger";
       link.href = onItemClick(item);

@@ -45,6 +45,8 @@
     <link rel="preload" href="ps5_start.mp3" as="audio" />
     <link rel="preload" href="ps5-login.mp3" as="audio" />
     <link rel="preload" href="ps5-theme.mp3" as="audio" />
+    <link rel="preload" href="ps5-popup.mp3" as="audio" />
+    <link rel="preload" href="ps5-back-button.mp3" as="audio" />
     <audio
       id="ps5-boot-audio"
       class="ps5-boot__audio"
@@ -451,6 +453,37 @@
             <article class="review-detail" id="review-drawer-detail" aria-live="polite"></article>
           </div>
         </aside>
+      </div>
+
+      <div class="gunpla-modal" id="gunpla-modal" hidden aria-hidden="true">
+        <button type="button" class="gunpla-modal__backdrop" id="gunpla-modal-backdrop" aria-label="Close kit"></button>
+        <div
+          class="gunpla-modal__panel"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="gunpla-modal-title"
+        >
+          <button type="button" class="gunpla-modal__close" id="gunpla-modal-close" aria-label="Close kit">
+            <span aria-hidden="true">×</span>
+          </button>
+          <div class="gunpla-modal__scroll">
+            <article class="gunpla-modal__content static-page static-page--gunpla">
+              <h2 id="gunpla-modal-title" class="gunpla-modal__title static-page__title"></h2>
+              <div
+                class="gunpla-kit-review review-detail__body"
+                id="gunpla-modal-review"
+                hidden
+                aria-label="Kit review"
+              ></div>
+              <div
+                class="gunpla-gallery gunpla-modal__gallery"
+                id="gunpla-modal-gallery"
+                role="region"
+                aria-label="Kit photos"
+              ></div>
+            </article>
+          </div>
+        </div>
       </div>
     </div>
 

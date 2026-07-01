@@ -1,6 +1,7 @@
 import "./style.css";
 import manifest from "virtual:gunpla-manifest";
 import { bootstrapPortal } from "./portal-app.js";
+import { initGunplaModal } from "./gunpla-modal.js";
 import { initReviewPanel } from "./review-panel.js";
 import {
   REVIEW_PAGE_SIZE,
@@ -15,7 +16,7 @@ import {
   sortReviews,
   uniqueSorted,
 } from "./main-functions.js";
-import { gunplaCoverUrl, kitDetailHref, mountGunplaGallery } from "./gunpla-shared.js";
+import { gunplaCoverUrl, mountGunplaGallery } from "./gunpla-shared.js";
 import { initUiSounds, playNavSelectSound, startThemeMusic } from "./ui-sounds.js";
 
 const base = import.meta.env.BASE_URL;
@@ -31,6 +32,7 @@ let gunplaReady = false;
 let portalScope = null;
 let bootFinished = false;
 let reviewPanel = { open: () => {}, close: () => {} };
+let gunplaModal = { open: () => {}, close: () => {} };
 
 function finishBoot() {
   if (bootFinished) return;
@@ -165,11 +167,11 @@ function initGunplaPanel() {
   const items = published.map((kit) => ({
     alt: kit.title,
     src: gunplaCoverUrl(kit.cover),
-    href: kitDetailHref(kit.slug),
+    slug: kit.slug,
   }));
 
   mountGunplaGallery(mount, items, {
-    onItemClick: (item) => item.href,
+    onKitOpen: (item) => gunplaModal.open(item.slug),
   });
 }
 
@@ -195,6 +197,7 @@ function startApp(reviews) {
     base,
     getReviews: () => reviewsCache,
   });
+  gunplaModal = initGunplaModal();
   renderSidebars(reviews, reviewPanel.open);
   initUiSounds(base);
 
