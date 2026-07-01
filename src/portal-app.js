@@ -4,7 +4,7 @@ const NAV_ITEMS = [
   { id: "gunpla", label: "Gunpla", heroTitle: "Gundam Collection" },
   { id: "gold", label: "Gold", heroTitle: "Gold Collection" },
   { id: "resume", label: "Resume", heroTitle: "Resume" },
-  { id: "learnings", label: "Learnings", heroTitle: "My Life Learnings" },
+  { id: "learnings", label: "Autobiography", heroTitle: "The Journey" },
 ];
 
 const NAV_IDS = new Set(NAV_ITEMS.map((item) => item.id));

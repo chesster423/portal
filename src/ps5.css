@@ -227,7 +227,8 @@ html.ps5-mode .bg-glow {
   z-index: 20;
   display: flex;
   align-items: flex-end;
-  gap: clamp(0.65rem, 1.4vw, 1.15rem);
+  /* gap: clamp(0.65rem, 1.4vw, 1.15rem); */
+  gap: 10px;
   padding: var(--ps5-nav-pad-top) 0 var(--ps5-nav-pad-bottom);
   max-width: none;
   overflow-x: auto;
