@@ -1,12 +1,13 @@
 import "./style.css";
 import manifest from "virtual:gunpla-manifest";
 import { bootstrapPortal } from "./portal-app.js";
+import { initReviewPanel } from "./review-panel.js";
 import {
   REVIEW_PAGE_SIZE,
   filterReviews,
-  goToReviewPage,
   initFiltersExpand,
   loadReviews,
+  openReview,
   renderChips,
   renderFixedChips,
   renderGrid,
@@ -29,6 +30,7 @@ let gamesReady = false;
 let gunplaReady = false;
 let portalScope = null;
 let bootFinished = false;
+let reviewPanel = { open: () => {}, close: () => {} };
 
 function finishBoot() {
   if (bootFinished) return;
@@ -128,7 +130,7 @@ function initGamesPanel(reviews) {
     countHint.textContent = `${visible.length} game${visible.length === 1 ? "" : "s"}`;
     empty.hidden = visible.length > 0;
     grid.hidden = visible.length === 0;
-    renderGrid(grid, slice, (id) => goToReviewPage(id, base), base);
+    renderGrid(grid, slice, (id) => openReview(id, reviewPanel.open), base);
     if (loadMoreWrap && loadMoreBtn) {
       const hasMore = visible.length > slice.length;
       loadMoreWrap.hidden = visible.length === 0 || !hasMore;
@@ -189,7 +191,11 @@ function focusGamesSearch() {
 
 function startApp(reviews) {
   reviewsCache = reviews;
-  renderSidebars(reviews, base);
+  reviewPanel = initReviewPanel({
+    base,
+    getReviews: () => reviewsCache,
+  });
+  renderSidebars(reviews, reviewPanel.open);
   initUiSounds(base);
 
   const hooks = {

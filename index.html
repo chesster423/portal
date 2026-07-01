@@ -440,6 +440,18 @@
           </p>
         </section>
       </div>
+
+      <div class="review-drawer" id="review-drawer" hidden aria-hidden="true">
+        <button type="button" class="review-drawer__backdrop" id="review-drawer-backdrop" aria-label="Close review"></button>
+        <aside class="review-drawer__panel" role="dialog" aria-modal="true" aria-labelledby="review-drawer-title">
+          <button type="button" class="review-drawer__close" id="review-drawer-close" aria-label="Close review">
+            <span aria-hidden="true">×</span>
+          </button>
+          <div class="review-drawer__scroll">
+            <article class="review-detail" id="review-drawer-detail" aria-live="polite"></article>
+          </div>
+        </aside>
+      </div>
     </div>
 
     <script type="module" src="/src/main.js"></script>

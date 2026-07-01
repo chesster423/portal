@@ -188,7 +188,7 @@ function latestFiveReviews(reviews) {
   return [...reviews].slice(-5).reverse();
 }
 
-export function renderSidebars(reviews, base) {
+export function renderSidebars(reviews, onOpen) {
   const topEl = document.getElementById("side-top-10");
   const latestEl = document.getElementById("side-latest-5");
   if (!topEl || !latestEl) return;
@@ -204,7 +204,7 @@ export function renderSidebars(reviews, base) {
     .map(
       (r) => `
     <li class="side-list__item">
-      <a class="side-list__link" href="${base}review.html?id=${encodeURIComponent(r.id)}">${escapeHtml(r.title)}</a>
+      <button type="button" class="side-list__link" data-review-id="${escapeAttr(r.id)}">${escapeHtml(r.title)}</button>
       <span class="side-list__score" data-tier="${scoreTier(r.score)}">${escapeHtml(String(r.score))}</span>
     </li>`,
     )
@@ -215,16 +215,25 @@ export function renderSidebars(reviews, base) {
     .map(
       (r) => `
     <li class="side-list__item side-list__item--latest">
-      <a class="side-list__link" href="${base}review.html?id=${encodeURIComponent(r.id)}">${escapeHtml(r.title)}</a>
+      <button type="button" class="side-list__link" data-review-id="${escapeAttr(r.id)}">${escapeHtml(r.title)}</button>
       <span class="side-list__date">${escapeHtml(String(r.date ?? "—"))}</span>
     </li>`,
     )
     .join("");
+
+  const openFromSidebar = (e) => {
+    const btn = e.target.closest("[data-review-id]");
+    if (!btn) return;
+    onOpen(btn.getAttribute("data-review-id"));
+  };
+
+  topEl.addEventListener("click", openFromSidebar);
+  latestEl.addEventListener("click", openFromSidebar);
 }
 
-export function goToReviewPage(id, base) {
+export function openReview(id, onOpen) {
   if (!id) return;
-  window.location.href = `${base}review.html?id=${encodeURIComponent(id)}`;
+  onOpen(id);
 }
 
 export function avgScore(reviews) {
