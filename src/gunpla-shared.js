@@ -96,11 +96,6 @@ export function gunplaImageUrl(slug, file) {
   return `${gunplaBaseUrl()}${slug}/${file}`;
 }
 
-export function kitDetailHref(slug) {
-  const base = String(import.meta.env.BASE_URL || "/").replace(/\/?$/, "/");
-  return `${base}gunpla/${slug}.html`;
-}
-
 export function gunplaReviewUrl(slug) {
   const base = String(import.meta.env.BASE_URL || "/").replace(/\/?$/, "/");
   return `${base}gunpla-reviews/${slug}.html`;
@@ -642,7 +637,7 @@ export function buildGunplaLightbox() {
 }
 
 export function mountGunplaGallery(mount, items, options = {}) {
-  const { onItemClick, onKitOpen } = options;
+  const { onKitOpen } = options;
   const frag = document.createDocumentFragment();
   for (const item of items) {
     const figure = document.createElement("figure");
@@ -662,19 +657,6 @@ export function mountGunplaGallery(mount, items, options = {}) {
       btn.appendChild(img);
       btn.addEventListener("click", () => onKitOpen(item));
       figure.appendChild(btn);
-    } else if (onItemClick) {
-      const link = document.createElement("a");
-      link.className = "gunpla-gallery__trigger";
-      link.href = onItemClick(item);
-      link.setAttribute("aria-label", `View ${item.alt}`);
-      const img = document.createElement("img");
-      img.className = "gunpla-gallery__img";
-      img.src = item.src;
-      img.alt = item.alt;
-      img.loading = "lazy";
-      img.decoding = "async";
-      link.appendChild(img);
-      figure.appendChild(link);
     } else {
       const btn = document.createElement("button");
       btn.type = "button";
