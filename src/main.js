@@ -1,5 +1,6 @@
 import "./style.css";
 import manifest from "virtual:gunpla-manifest";
+import { initDashboardWidgets } from "./dashboard-widgets.js";
 import { bootstrapPortal, isValidNavId, navHashFor, normalizeNavHash, parseNavHash } from "./portal-app.js";
 import { initGunplaModal } from "./gunpla-modal.js";
 import { initReviewPanel } from "./review-panel.js";
@@ -236,6 +237,7 @@ function startApp(reviews) {
   });
   gunplaModal = initGunplaModal();
   renderSidebars(reviews, reviewPanel.open);
+  initDashboardWidgets(reviews);
   initUiSounds(base);
 
   normalizeNavHash();

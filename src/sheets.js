@@ -56,9 +56,16 @@ function normHeader(h) {
     .toLowerCase();
 }
 
+function parsePlaytime(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return 0;
+  const n = Number.parseFloat(s.replace(/[^\d.]/g, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
 /**
  * @param {string[][]} rows
- * @returns {Array<{ id: string, title: string, platform: string, genre: string, score: number, date: string, summary: string, body: string, polished_review: string }>}
+ * @returns {Array<{ id: string, title: string, platform: string, genre: string, score: number, date: string, summary: string, body: string, polished_review: string, playtime: number }>}
  */
 export function rowsToReviews(rows) {
   if (!rows.length) return [];
@@ -81,6 +88,7 @@ export function rowsToReviews(rows) {
   const iSummary = idx("summary");
   const iBody = idx("body");
   const iPolished = idx("polished_review");
+  const iPlaytime = idx("playtime");
 
   if (iTitle === -1 || iSummary === -1 || iBody === -1) {
     throw new Error("Sheet must include columns: title, summary, body (and id, platform, genre, score, date or data).");
@@ -104,6 +112,7 @@ export function rowsToReviews(rows) {
     const body = String(cells[iBody] ?? "").trim();
     const polished_review =
       iPolished !== -1 ? String(cells[iPolished] ?? "").trim() : "";
+    const playtime = parsePlaytime(iPlaytime !== -1 ? cells[iPlaytime] : "");
 
     if (!summary || !body) continue;
 
@@ -117,6 +126,7 @@ export function rowsToReviews(rows) {
       summary,
       body,
       polished_review,
+      playtime,
     });
   }
   return out;

@@ -238,7 +238,84 @@
           aria-label="Stats dashboard"
         >
           <div class="ps5-stats-grid">
-            <div class="ps5-widget ps5-widget--wide">
+            <article class="ps5-widget ps5-widget--highlight">
+              <h3 class="ps5-widget__title">Latest Game Highlights</h3>
+              <a
+                class="ps5-highlight"
+                href="https://www.youtube.com/watch?v=G5PXwAKa26o"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <img
+                  class="ps5-highlight__thumb"
+                  src="https://img.youtube.com/vi/G5PXwAKa26o/hqdefault.jpg"
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="ps5-highlight__play" aria-hidden="true">▶</span>
+                <span class="ps5-highlight__caption">Watch on YouTube</span>
+              </a>
+            </article>
+
+            <article class="ps5-widget ps5-widget--friends">
+              <header class="ps5-widget__head">
+                <h3 class="ps5-widget__title">Online Friends</h3>
+                <span class="ps5-widget__badge" aria-label="4 online">4</span>
+              </header>
+              <ul class="ps5-friends" aria-label="Friends online">
+                <li class="ps5-friends__item">
+                  <span class="ps5-friends__avatar" aria-hidden="true">A</span>
+                  <span class="ps5-friends__name">AstroFan_42</span>
+                  <span class="ps5-friends__status" aria-hidden="true"></span>
+                </li>
+                <li class="ps5-friends__item">
+                  <span class="ps5-friends__avatar" aria-hidden="true">N</span>
+                  <span class="ps5-friends__name">NightCity_R</span>
+                  <span class="ps5-friends__status" aria-hidden="true"></span>
+                </li>
+                <li class="ps5-friends__item">
+                  <span class="ps5-friends__avatar" aria-hidden="true">J</span>
+                  <span class="ps5-friends__name">JRPG_king</span>
+                  <span class="ps5-friends__status" aria-hidden="true"></span>
+                </li>
+                <li class="ps5-friends__item">
+                  <span class="ps5-friends__avatar" aria-hidden="true">P</span>
+                  <span class="ps5-friends__name">PixelWitch</span>
+                  <span class="ps5-friends__status" aria-hidden="true"></span>
+                </li>
+              </ul>
+            </article>
+
+            <article class="ps5-widget ps5-widget--rings" aria-label="Age">
+              <h3 class="ps5-widget__title">Player Profile</h3>
+              <div class="ps5-rings">
+                <div class="ps5-ring" style="--ps5-ring-level: 0.82">
+                  <svg class="ps5-ring__svg" viewBox="0 0 64 64" aria-hidden="true">
+                    <circle class="ps5-ring__track" cx="32" cy="32" r="26" />
+                    <circle class="ps5-ring__fill" cx="32" cy="32" r="26" />
+                  </svg>
+                  <span class="ps5-ring__icon" aria-hidden="true">🎮</span>
+                  <span class="ps5-ring__value">36</span>
+                </div>
+                <div class="ps5-ring" style="--ps5-ring-level: 0.76">
+                  <svg class="ps5-ring__svg" viewBox="0 0 64 64" aria-hidden="true">
+                    <circle class="ps5-ring__track" cx="32" cy="32" r="26" />
+                    <circle class="ps5-ring__fill" cx="32" cy="32" r="26" />
+                  </svg>
+                  <span class="ps5-ring__icon" aria-hidden="true">🎮</span>
+                  <span class="ps5-ring__value">36</span>
+                </div>
+              </div>
+              <p class="ps5-rings__label">Age</p>
+            </article>
+
+            <article class="ps5-widget ps5-widget--playtime">
+              <h3 class="ps5-widget__title">Playtime</h3>
+              <div class="ps5-playtime" id="dashboard-playtime" aria-label="Playtime by game"></div>
+            </article>
+
+            <article class="ps5-widget ps5-widget--playing">
               <h3 class="ps5-widget__title">Currently Playing</h3>
               <div class="side-playing__cover shine-container">
                 <img
@@ -250,9 +327,9 @@
                   decoding="async"
                 />
               </div>
-            </div>
+            </article>
 
-            <div class="ps5-widget">
+            <article class="ps5-widget ps5-widget--owned">
               <h3 class="ps5-widget__title">Games Owned</h3>
               <div class="side-stats">
                 <div class="side-stats__block">
@@ -296,19 +373,53 @@
                   <span class="side-stats__num side-stats__num--muted">xx</span>
                 </div>
               </div>
-            </div>
+            </article>
 
-            <div class="ps5-widget">
+            <article class="ps5-widget ps5-widget--storage">
+              <h3 class="ps5-widget__title">Console Storage</h3>
+              <div class="ps5-storage">
+                <div class="ps5-storage__meta">
+                  <span>Free space</span>
+                  <strong>269.3 GB</strong>
+                </div>
+                <div
+                  class="ps5-storage__bar"
+                  role="img"
+                  aria-label="555.7 GB used of 825 GB total"
+                >
+                  <span class="ps5-storage__seg ps5-storage__seg--games" style="width: 48%"></span>
+                  <span class="ps5-storage__seg ps5-storage__seg--apps" style="width: 12%"></span>
+                  <span class="ps5-storage__seg ps5-storage__seg--captures" style="width: 8%"></span>
+                  <span class="ps5-storage__seg ps5-storage__seg--other" style="width: 7%"></span>
+                </div>
+                <ul class="ps5-storage__legend">
+                  <li><span class="ps5-storage__dot ps5-storage__dot--games"></span> Games</li>
+                  <li><span class="ps5-storage__dot ps5-storage__dot--apps"></span> Apps</li>
+                  <li><span class="ps5-storage__dot ps5-storage__dot--captures"></span> Captures</li>
+                  <li><span class="ps5-storage__dot ps5-storage__dot--other"></span> Other</li>
+                </ul>
+              </div>
+            </article>
+
+            <article class="ps5-widget ps5-widget--top10">
               <h3 class="ps5-widget__title">Top 10 Games</h3>
               <ol class="side-list side-list--ranked" id="side-top-10"></ol>
-            </div>
+            </article>
 
-            <div class="ps5-widget">
+            <article class="ps5-widget ps5-widget--latest">
               <h3 class="ps5-widget__title">5 Latest Reviews</h3>
               <ul class="side-list" id="side-latest-5"></ul>
-            </div>
+            </article>
 
-            <div class="ps5-widget">
+            <article class="ps5-widget ps5-widget--support">
+              <h3 class="ps5-widget__title">Support Me</h3>
+              <div class="ps5-support">
+                <img class="ps5-support__qr" src="images/qr.png" alt="Support QR code" width="120" height="120" />
+                <p class="ps5-support__hint">Scan to support</p>
+              </div>
+            </article>
+
+            <article class="ps5-widget ps5-widget--social">
               <h3 class="ps5-widget__title">Social</h3>
               <nav class="side-social" aria-label="Social media">
                 <a
@@ -325,7 +436,7 @@
                   >GitHub</a
                 >
               </nav>
-            </div>
+            </article>
           </div>
         </section>
 
